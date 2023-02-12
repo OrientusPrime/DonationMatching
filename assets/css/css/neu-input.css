@@ -1,0 +1,105 @@
+.neu-input.form-control {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  color: var(--bs-dark);
+}
+
+.neu-input.form-control[type=number] {
+  -moz-appearance: textfield;
+}
+
+.neu-input {
+  background-color: #e8e8e8;
+  /*box-shadow: 6px 6px 10px #000000, -6px -6px 10px rgba(17,26,35,0.45);*/
+  border-radius: 1.5rem;
+  border: none;
+  color: var(--bs-dark);
+  padding: 1rem;
+}
+
+.neu-shadow {
+  box-shadow: 6px 6px 10px #000000, -6px -6px 10px rgba(17,26,35,0.45);
+}
+
+.neu-input.form-control:focus {
+  color: #f2f4f8;
+  background-color: #e8e8e8;
+  /*border-color: #0E1722;*/
+  outline: 0;
+}
+
+.metamask-icon {
+  background-image: url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M31.2582 1L17.5273 11.1599L20.0807 5.17238L31.2582 1Z' fill='%23E17726'/%3E%3Cpath d='M0.773935 1.012L11.9216 5.17313L14.3461 11.2391L0.773935 1.012ZM25.7326 22.6073L31.8014 22.7228L29.6804 29.928L22.2751 27.8891L25.7326 22.6073ZM6.26743 22.6073L9.71206 27.8891L2.31918 29.9281L0.21106 22.7228L6.26743 22.6073Z' fill='%23E27625'/%3E%3Cpath d='M14.0164 9.694L14.2644 17.7044L6.84302 17.3668L8.95402 14.182L8.98077 14.1514L14.0164 9.694ZM17.9068 9.60463L23.0193 14.1516L23.0458 14.1821L25.1568 17.3669L17.737 17.7044L17.9068 9.60463ZM9.92939 22.6305L13.9816 25.7879L9.27439 28.0605L9.92939 22.6305ZM22.0714 22.63L22.7128 28.0606L18.0186 25.7876L22.0714 22.63Z' fill='%23E27625'/%3E%3Cpath d='M18.1222 25.4902L22.8856 27.7967L18.4547 29.9025L18.5007 28.5107L18.1222 25.4902ZM13.8763 25.4912L13.5127 28.488L13.5426 29.9009L9.10132 27.7967L13.8763 25.4912Z' fill='%23D5BFB2'/%3E%3Cpath d='M12.5008 18.7499L13.7456 21.3659L9.50769 20.1244L12.5008 18.7499ZM19.4989 18.7501L22.5062 20.1244L18.2544 21.3655L19.4989 18.7501Z' fill='%23233447'/%3E%3Cpath d='M10.2532 22.6038L9.56823 28.2337L5.89661 22.7269L10.2532 22.6038ZM21.747 22.6039L26.1037 22.7269L22.4184 28.234L21.747 22.6039ZM25.264 17.0484L22.0934 20.2798L19.6487 19.1626L18.4784 21.6231L17.7111 17.392L25.264 17.0484ZM6.73436 17.0484L14.2887 17.392L13.5214 21.6231L12.3507 19.163L9.91911 20.2799L6.73436 17.0484Z' fill='%23CC6228'/%3E%3Cpath d='M6.52075 16.3853L10.108 20.0254L10.2323 23.619L6.52075 16.3853ZM25.4829 16.3787L21.7646 23.6254L21.9046 20.0254L25.4829 16.3787ZM14.1134 16.607L14.2578 17.5158L14.6145 19.7796L14.3851 26.7327L13.3008 21.1471L13.3004 21.0894L14.1134 16.607ZM17.8848 16.5944L18.6999 21.0894L18.6995 21.1471L17.6124 26.7467L17.5694 25.3461L17.3998 19.7384L17.8848 16.5944Z' fill='%23E27525'/%3E%3Cpath d='M22.2235 19.8808L22.1022 23.003L18.3179 25.9514L17.5529 25.4109L18.4104 20.994L22.2235 19.8808ZM9.78967 19.8808L13.5895 20.994L14.447 25.4109L13.682 25.9514L9.89767 23.0028L9.78967 19.8808Z' fill='%23F5841F'/%3E%3Cpath d='M8.3772 27.1073L13.2187 29.4013L13.1982 28.4216L13.6033 28.066H18.3951L18.8148 28.4204L18.7838 29.3993L23.5947 27.113L21.2537 29.0475L18.4231 30.9916H13.5644L10.7357 29.0395L8.3772 27.1073Z' fill='%23C0AC9D'/%3E%3Cpath d='M17.7755 25.1849L18.46 25.6685L18.8611 28.869L18.2806 28.3789H13.7211L13.1516 28.8789L13.5396 25.6688L14.2244 25.1849H17.7755Z' fill='%23161616'/%3E%3Cpath d='M30.3517 1.28125L32 6.22587L30.9706 11.2255L31.7036 11.7909L30.7118 12.5476L31.4573 13.1234L30.4701 14.0223L31.0761 14.4611L29.4679 16.3394L22.8716 14.4187L22.8145 14.3881L18.0611 10.3784L30.3517 1.28125ZM1.64825 1.28125L13.939 10.3784L9.1855 14.3881L9.12838 14.4187L2.53212 16.3394L0.923875 14.4611L1.52937 14.0226L0.542875 13.1234L1.28688 12.5483L0.280125 11.7894L1.04075 11.2236L0 6.22612L1.64825 1.28125Z' fill='%23763E1A'/%3E%3Cpath d='M22.549 13.9987L29.5381 16.0336L31.8087 23.0319H25.8182L21.6907 23.0839L24.6925 17.2329L22.549 13.9987ZM9.45098 13.9987L7.30711 17.2329L10.3092 23.0839L6.18361 23.0319H0.203857L2.46173 16.0337L9.45098 13.9987ZM20.423 5.139L18.4681 10.4189L18.0532 17.5514L17.8945 19.787L17.8819 25.498H14.118L14.1057 19.7978L13.9465 17.5495L13.5315 10.4189L11.5769 5.139H20.423Z' fill='%23F5841F'/%3E%3C/svg%3E");
+  width: 1rem;
+  height: 1rem;
+  background-size: contain;
+}
+
+.pool-card-header-div-mother p {
+  margin-bottom: 0;
+  font-weight: 300;
+  font-size: .8rem;
+  margin-bottom: 0;
+}
+
+.pool-card-header-div h4 {
+  margin-bottom: 0;
+}
+
+.searchpool {
+  height: 4rem;
+  padding-left: 3.5rem;
+  /*box-shadow: inset -15px -15px 35px rgba(255,255,255,0.32), inset 15px 15px 35px rgb(19,68,145);*/
+  /*background-color: var(--bs-link-color);*/
+  /*box-shadow: inset 15px 15px 30px #0041a1, inset -15px -15px 30px #006cff;*/
+  /*background-color: #0056d6;*/
+  color: #000000;
+  /*border-color: var(--bs-blue);*/
+  font-size: 1.2rem;
+  font-weight: 300;
+  border-radius: 1.5rem!important;
+}
+
+.go-donation-btn.black:hover {
+  background-color: #181818;
+}
+
+.go-donation-btn.black {
+}
+
+.go-donation-btn.black.searchbutton {
+  height: 4rem;
+  padding-left: 2rem!important;
+  padding-right: 2rem!important;
+  border-radius: 1.5rem!important;
+  font-size: 1.2rem;
+  font-weight: 300;
+}
+
+.search-icon {
+  position: absolute;
+  left: 1rem;
+  top: 1.25rem;
+}
+
+.pool-card .form-control {
+  border-radius: 1rem!important;
+}
+
+.searchpool:focus {
+  /*background-color: #0d6efd;*/
+  /*color: #fff;*/
+}
+
+.pool-card .go-donation-btn {
+  border-radius: 1rem!important;
+}
+
+.go-donation-btn {
+  box-shadow: -10px -10px 15px rgb(255,255,255), 10px 10px 15px rgba(70,70,70,0.26);
+}
+
+.pool-card-header-div-mother {
+  margin-bottom: .5rem;
+}
+

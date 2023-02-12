@@ -1,1 +1,174 @@
-<h1>test</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+<script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"
+        type="application/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/9.0.0/bignumber.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Donation</title>
+    <script src="assets/js/main.js"></script>
+    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/css/neu-input.css">
+    <link rel="stylesheet" href="assets/css/css/styles.css">
+</head>
+
+<body>
+    <header class="mb-5 py-3">
+        <div class="container d-flex justify-content-between">
+            <a class="text-decoration-none text-dark" href="index.html">
+                <h1 class="fw-light h4"><span class="fw-bold">Earthquake</span> Donation</h1>
+            </a>
+            <div class="d-flex gap-3">
+                <button id="createPoolModalBtn" class="btn go-donation-btn outline black" type="button" data-bs-target="#createPool" data-bs-toggle="modal" style="opacity: .2; pointer-events: none; cursor: not-allowed;">Create Pool<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor">
+                    <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+                    <path d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path>
+                </svg></button>
+                <button class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
+                </div>
+        </div>
+    </header>
+    <div class="container mb-5" style="max-width: 1000px;">
+        <h5 class="text-nowrap h1 mb-3 text-center"><span class="fw-bold">Search Pool</span><span class="fw-lighter">&nbsp;With Name</span></h5>
+        <div class="d-flex gap-3 align-items-center position-relative searchpoolnamediv">
+            <input id="searchInput" type="text" class="form-control searchpool neu-shadow" placeholder="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-search fs-3 search-icon" style="color: var(--bs-blue);">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
+            </svg>
+            <button class="btn btn-primary go-donation-btn black searchbutton neu-shadow" type="button" onclick="searchByUser()">Search</button>
+        </div>
+        <div id="search-result-div" class="mt-3"></div>
+    </div>
+    <div class="container pb-5">
+        <h5 class="fw-lighter text-center mb-3 h1"><span class="fw-bold">All</span> Pools</h5>
+        <div class="row gx-5 gy-5 row-cols-1 row-cols-md-2 row-cols-xl-3">
+            <div class="col">
+                <div id="BENQI" class="pool-card neu-shadow">
+                    <div class="loader-info">
+                        <div class="pool-card-header-div-mother">
+                            <div class="pool-card-header-div">
+                                <h4 class="poolname">Pool Name</h4>
+                                <div class="remain-day-div"><span class="remain-day-span">15</span><span>days left</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
+                                        <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+                                        <path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path>
+                                    </svg></div>
+                            </div>
+                            <p><span class="fw-bold donation-adress-name-span">Donation Adress Name</span>&nbsp;is funding</p>
+                        </div>
+                        <div class="raised-goadl-div">
+                            <div class="raised-with-logo-div"><span class="loader-percentage">Matched<span class="badge bg-white-50 ratio">x%</span></span></div><span class="loader-percentage">Total</span>
+                        </div>
+                        <div class="loader-bar-mother">
+                            <div class="loader-back loader-part">
+                                <div class="loader-front loader-part" style="width: 10%;"></div>
+                            </div>
+                        </div>
+                        <div class="raised-goadl-div">
+                            <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
+                        </div>
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="number" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            <button class="btn go-donation-btn outline lets-donate" type="button" onclick="donateByUser(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div id="Ava Labs" class="pool-card neu-shadow">
+                    <div class="loader-info">
+                        <div class="pool-card-header-div-mother">
+                            <div class="pool-card-header-div">
+                                <h4 class="poolname">Pool Name</h4>
+                                <div class="remain-day-div"><span class="remain-day-span">x</span><span>days left</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
+                                        <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+                                        <path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path>
+                                    </svg></div>
+                            </div>
+                            <p><span class="fw-bold donation-adress-name-span">Donation Adress Name</span>&nbsp;is funding</p>
+                        </div>
+                        <div class="raised-goadl-div">
+                            <div class="raised-with-logo-div"><span class="loader-percentage">Matched<span class="badge bg-white-50 ratio">x%</span></span></div><span class="loader-percentage">Total</span>
+                        </div>
+                        <div class="loader-bar-mother">
+                            <div class="loader-back loader-part">
+                                <div class="loader-front loader-part" style="width: 10%;"></div>
+                            </div>
+                        </div>
+                        <div class="raised-goadl-div">
+                            <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
+                        </div>
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="number" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            <button class="btn go-donation-btn outline lets-donate" type="button" onclick="donateByUser(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div id="Trader Joe" class="pool-card neu-shadow">
+                    <div class="loader-info">
+                        <div class="pool-card-header-div-mother">
+                            <div class="pool-card-header-div">
+                                <h4 class="poolname">Pool Name</h4>
+                                <div class="remain-day-div"><span class="remain-day-span">15</span><span>days left</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
+                                        <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+                                        <path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path>
+                                    </svg></div>
+                            </div>
+                            <p><span class="fw-bold donation-adress-name-span">Donation Adress Name</span>&nbsp;is funding</p>
+                        </div>
+                        <div class="raised-goadl-div">
+                            <div class="raised-with-logo-div"><span class="loader-percentage">Matched<span class="badge bg-white-50 ratio">x%</span></span></div><span class="loader-percentage">Total</span>
+                        </div>
+                        <div class="loader-bar-mother">
+                            <div class="loader-back loader-part">
+                                <div class="loader-front loader-part" style="width: 10%;"></div>
+                            </div>
+                        </div>
+                        <div class="raised-goadl-div">
+                            <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
+                        </div>
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="number" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            <button class="btn go-donation-btn outline lets-donate" type="button" onclick="donateByUser(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    <div class="modal fade" role="dialog" tabindex="-1" id="createPool">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="fw-bold modal-title">Create Pool</h4><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"><small class="d-block mb-4">Please check your metamask activity.</small>
+                    <div class="mb-3">
+                        <p class="d-flex align-items-center gap-2 mb-2">Pool Name</p>
+                            <input type="text" id="poolNameInput" class="neu-input neu-shadow w-100">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <p class="d-flex align-items-center gap-2 mb-2">Match Amount (USDC)<i class="usdc-icon"></i></p><input type="number" id="matchAmountInput" class="neu-input neu-shadow amount w-100" value="" min="1001">
+                    </div>
+                    <div class="mb-3">
+                        <p class="d-flex align-items-center gap-2 mb-2">Deadline<svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path></svg></p><input id="deadlineInput" class="neu-input neu-shadow amount w-100" type="date">
+                    </div>
+
+                    <div class="mb-3">
+                        <p class="d-flex align-items-center gap-2 mb-2">Pool Name</p>
+                        <select class="form-select neu-input neu-shadow" id="donationAddressSelect">
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer"><button class="btn go-donation-btn w-100 donatebtn" id="createPoolBtn" type="button" onclick="createNewPoolByUser()">Create Pool</button></div>
+            </div>
+        </div>
+    </div>
+    <script>
+
+    </script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="assets/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

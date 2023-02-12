@@ -1035,3 +1035,16 @@ async function displayPoolInfo() {
     poolNameHeader.textContent = poolName;
   }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  const poolCards = document.querySelectorAll(".pool-card");
+  poolCards.forEach(function (poolCard) {
+    poolCard.addEventListener("click", function () {
+      const id = poolCard.getAttribute("id");
+      const encoded = encode(id);
+      encoded.then(function (result) {
+        window.location.href = "result.html?poolId=" + result;
+      });
+    });
+  });
+});

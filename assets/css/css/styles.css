@@ -399,3 +399,13 @@ thead tr.neu-shadow {
   cursor: pointer;
   text-decoration: underline;
 }
+
+.lets-donate{
+  white-space:nowrap;
+}
+
+.lets-donate.disabled{
+  cursor: not-allowed;
+  pointer-events: none;
+}
+

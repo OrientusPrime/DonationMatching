@@ -8,7 +8,13 @@ const createPoolBtn = document.getElementById("createPoolBtn");
 
 let isopen = false;
 
-let provider, walletAddress, usdcContract, ourContract, accounts, contract;
+let provider,
+  walletAddress,
+  usdcContract,
+  ourContract,
+  accounts,
+  contract,
+  lastAllowedAmount;
 
 // Define the Ethereum network ID
 const ETHEREUM_NETWORK_ID = 1;
@@ -596,6 +602,8 @@ const usdcABI = [
 
 function newConnection() {
   connect(async function () {
+    let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
+    lastAllowedAmount = allowanceAmount;
     updateCreatePoolBtnVisibility();
     loadDonationAddresses();
     const urlParams = new URLSearchParams(window.location.search);
@@ -615,7 +623,23 @@ async function connect(callback) {
   const currentNetworkId = await network.chainId;
   console.log(currentNetworkId);
   if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
-    alert("Unsupported network");
+    let alertText =
+      "Network Name:\nAvalanche Testnet C-Chain\n\n" +
+      "Network URL:\nhttps://api.avax-test.network/ext/bc/C/rpc\n\n" +
+      "Network Name:\nAvalanche Testnet C-Chain \n\n" +
+      "Chain ID:\n43113 \n\n" +
+      "Currency Symbol:\nAVAX \n\n" +
+      "Block Explorer URL:\nhttps://testnet.snowtrace.io/ \n";
+
+    Swal.fire({
+      title: "Please connect to Avalanche Fuji Network",
+      html: "<pre>" + alertText + "</pre>",
+      customClass: {
+        popup: "format-pre",
+      },
+      icon: "error",
+    });
+
     throw new Error("Unsupported network");
   } else {
     signer = provider.getSigner();
@@ -680,7 +704,28 @@ async function getPoolName(poolId) {
 }
 
 async function donateWithMatch(poolId, amount) {
+  let donatedPoolName = await getPoolName(poolId);
+  Swal.fire({
+    title: "Please confirm your donation",
+    text:
+      "your donation will send to " +
+      donatedPoolName +
+      " pool" +
+      " and your donation amount is " +
+      amount +
+      " USDC",
+    icon: "info",
+    confirmButtonText: "Close",
+  });
   const tx = await ourContract.donateWithMatch(poolId, amount);
+
+  await provider.waitForTransaction(tx.hash);
+  Swal.fire({
+    title: "Your donation is successful",
+    text: "Thanks for your donation to the " + donatedPoolName + " pool",
+    icon: "success",
+    confirmButtonText: "Close",
+  });
   console.log(poolId + "Donate Transaction hash: " + tx.hash);
   return tx.hash;
 }
@@ -789,7 +834,7 @@ async function searchOnNewPage() {
                         <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
                     </div>
                     <div class="mt-2 d-flex gap-2 w-100"><input type="number" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
-                        <button class="btn go-donation-btn outline lets-donate" type="button" onclick="donateByUser(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
+                        <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
                 </div>
             </div>
   `;
@@ -860,33 +905,58 @@ async function createPool(
   return tx.hash;
 }
 
-async function donateByUser(event) {
+// Approve transaction
+const approveTransaction = async () => {
+  // Code to send the approve transaction
+  // Wait for the transaction to be confirmed
+  const transactionReceipt = await provider.waitForTransaction(transactionHash);
+  console.log("Transaction confirmed:", transactionReceipt);
+  let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
+  let lastAllowedAmount = allowanceAmount;
+};
+
+async function checkDonateAmount(event) {
   if (walletAddress === undefined) {
     newConnection();
   } else {
     let poolCard = event.target.closest(".pool-card");
-    let poolCardId = poolCard.id;
-    const encodedId = await encode(poolCardId);
-    console.log("pool card id" + encodedId);
-
     let donateAmount = await poolCard.querySelector(".donateAmountInput").value;
     let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
+    if (allowanceAmount > lastAllowedAmount) {
+      lastAllowedAmount = allowanceAmount;
+    }
 
-    let lastAllowedAmount = allowanceAmount;
-    //1000000 ile çarpmayı unutma
     if (lastAllowedAmount < donateAmount) {
-      approve(ourContractAddress, donateAmount);
-      console.log("ilk if WalletAdress: " + walletAddress);
-      console.log(`ilk if Allowance: ${lastAllowedAmount}`);
-      console.log(`ilk if Donate Amount: ${donateAmount}`);
+      poolCard.querySelector(".lets-donate").innerHTML = "Approve USDC";
     } else {
-      console.log(`else Allowance: ${lastAllowedAmount}`);
-      console.log(`else Donate Amount: ${donateAmount}`);
-      donateWithMatch(encodedId, donateAmount);
-      getPoolInfo(encodedId);
+      poolCard.querySelector(".lets-donate").innerHTML = "Donate";
     }
   }
 }
+
+// async function donateByUser(event) {
+//   let poolCard = event.target.closest(".pool-card");
+//   let poolCardId = poolCard.id;
+//   const encodedId = await encode(poolCardId);
+//   console.log("pool card id" + encodedId);
+
+//   let donateAmount = await poolCard.querySelector(".donateAmountInput").value;
+//   let lastAllowedAmount = allowanceAmount;
+
+//   if (lastAllowedAmount < donateAmount) {
+//     approve(ourContractAddress, donateAmount);
+//     poolCard.querySelector(".lets-donate").innerHTML = "Approving USDC...";
+//   } else {
+//     // Donate action
+//     donateWithMatch(encodedId, donateAmount);
+//     getPoolInfo(encodedId);
+//   }
+// }
+
+const inputElements = document.querySelectorAll(".donateAmountInput");
+inputElements.forEach((inputElement) => {
+  inputElement.addEventListener("input", checkDonateAmount);
+});
 
 // Call the closePoolWithDonation function
 async function closePoolWithDonation(poolId) {
@@ -1049,3 +1119,67 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
+
+async function checkAllowedAmount(donateAmount, poolCard) {
+  let poolCardId = poolCard.id;
+  let encodedId = await encode(poolCardId);
+  let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
+  let lastAllowedAmount = allowanceAmount;
+  if (lastAllowedAmount < donateAmount) {
+    await approve(ourContractAddress, donateAmount);
+    lastAllowedAmount = allowanceAmount;
+    poolCard.querySelector(".lets-donate").classList.remove("disabled");
+
+    await donateWithMatch(encodedId, donateAmount);
+
+    poolCard.querySelector(".lets-donate").innerHTML =
+      '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';
+  } else {
+    await donateWithMatch(encodedId, donateAmount);
+    poolCard.querySelector(".lets-donate").innerHTML =
+      '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';
+  }
+}
+
+const handleDonateClick = async (event) => {
+  let poolCard = event.target.closest(".pool-card");
+  let poolCardId = poolCard.id;
+  let encodedId = await encode(poolCardId);
+  console.log("pool card id" + encodedId);
+  donateAmount = poolCard.querySelector(".donateAmountInput").value;
+  if (donateAmount) {
+    lastAllowedAmount = await getAllowance(walletAddress, ourContractAddress);
+    const donateButton = poolCard.querySelector(".lets-donate");
+
+    if (lastAllowedAmount < donateAmount) {
+      // donateButton.innerHTML = "<span>Approving USDC...<span>";
+      Swal.fire({
+        title: "Please confirm and wait approval request!",
+        text: "Your Allowance Amount will increase for donation",
+        icon: "info",
+        confirmButtonText: "Close",
+      });
+      donateButton.classList.add("disabled");
+      let donateApprove = await approve(ourContractAddress, donateAmount);
+      const transactionReceipt = await provider.waitForTransaction(
+        donateApprove.hash
+      );
+      console.log("Transaction confirmed:", transactionReceipt);
+      // lastAllowedAmount = await getAllowance(walletAddress, ourContractAddress);
+      await donateWithMatch(encodedId, donateAmount);
+    } else {
+      donateButton.innerHTML =
+        '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';
+      donateButton.classList.remove("disabled");
+      console.log("handleDonateClick çalıştı");
+      await donateWithMatch(encodedId, donateAmount);
+    }
+  } else {
+    Swal.fire({
+      title: "Donation amount can't be 0!",
+      text: "if you want to make a donation, please enter a donation amount",
+      icon: "warning",
+      confirmButtonText: "Oh! Okay...",
+    });
+  }
+};

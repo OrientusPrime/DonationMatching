@@ -5,6 +5,7 @@ const matchAmountInput = document.getElementById("matchAmountInput");
 const deadlineInput = document.getElementById("deadlineInput");
 const poolNameInput = document.getElementById("poolNameInput");
 const createPoolBtn = document.getElementById("createPoolBtn");
+const walletConnectBtn = document.getElementById("walletConnectButton");
 
 let isopen = false;
 
@@ -718,7 +719,6 @@ async function donateWithMatch(poolId, amount) {
     confirmButtonText: "Close",
   });
   const tx = await ourContract.donateWithMatch(poolId, amount);
-
   await provider.waitForTransaction(tx.hash);
   Swal.fire({
     title: "Your donation is successful",
@@ -902,21 +902,21 @@ async function createPool(
     confirmButtonText: "Close",
   });
 
-  const tx = await ourContract.createPool(
+  let pooltx = await ourContract.createPool(
     matchAmount,
     deadline,
     foundationDonationAdressId,
     name
   );
-  await provider.waitForTransaction(tx.hash);
+  provider.waitForTransaction(pooltx.hash);
   Swal.fire({
     title: name + " pool is created successfully!",
     text: "Thanks for your support!",
     icon: "success",
     confirmButtonText: "Close",
   });
-  console.log(`Transaction hash: ${tx.hash}`);
-  return tx.hash;
+  console.log(`Transaction hash: ${pooltx.hash}`);
+  return pooltx.hash;
 }
 
 // Approve transaction
@@ -1063,12 +1063,12 @@ async function createNewPoolByUser() {
         icon: "info",
         confirmButtonText: "Close",
       });
-      txPool = approve(ourContractAddress, poolMatchAmount);
+      txPool = await approve(ourContractAddress, poolMatchAmount);
       await provider.waitForTransaction(txPool.hash);
       console.log("ilk if WalletAdress: " + walletAddress);
       console.log(`ilk if Allowance: ${lastAllowedAmount}`);
       console.log(`ilk if Match Amount: ${poolMatchAmount}`);
-      await createPool(
+      createPool(
         poolMatchAmount,
         poolDeadLine,
         foundationDonationAdressId,

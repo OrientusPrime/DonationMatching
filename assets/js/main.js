@@ -5,7 +5,8 @@ const matchAmountInput = document.getElementById("matchAmountInput");
 const deadlineInput = document.getElementById("deadlineInput");
 const poolNameInput = document.getElementById("poolNameInput");
 const createPoolBtn = document.getElementById("createPoolBtn");
-const walletConnectBtn = document.getElementById("walletConnectButton");
+
+// const walletConnectBtn = document.getElementById("walletConnectButton");
 
 let isopen = false;
 
@@ -601,12 +602,37 @@ const usdcABI = [
   },
 ];
 
+// window.addEventListener("load", function () {
+//   const walletConnectButton = document.querySelector("#walletConnectButton");
+//   if (walletConnectButton) {
+//     changeConnectBtn();
+//   }
+// });
+
+// async function changeConnectBtn() {
+//   walletConnectButton.innerHTML =
+//     'Wallet is conected <i class="metamask-icon"></i>';
+// }
+
+async function changeConnectBtnWalletId() {
+  walletConnectButton.innerHTML =
+    "Wallet is conected:" +
+    '<span class="walletadresonbtn">' +
+    walletAddress +
+    "</span>" +
+    '<i class="metamask-icon"></i>';
+}
+
 function newConnection() {
   connect(async function () {
+    if (walletAddress) {
+      changeConnectBtnWalletId();
+    }
     let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
     lastAllowedAmount = allowanceAmount;
     updateCreatePoolBtnVisibility();
     loadDonationAddresses();
+
     const urlParams = new URLSearchParams(window.location.search);
     const encodedId = urlParams.get("poolId");
     if (encodedId) {

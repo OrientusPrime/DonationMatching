@@ -409,3 +409,15 @@ thead tr.neu-shadow {
   pointer-events: none;
 }
 
+.walletadresonbtn{
+  max-width: 5rem !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* only for xl screen*/
+@media (min-width: 1200px) {
+.search-div-cont{
+  max-width: 1000px;
+}
+}

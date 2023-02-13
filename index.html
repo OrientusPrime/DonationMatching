@@ -17,29 +17,29 @@
 
 <body onload="newConnection()">
     <header class="mb-5 py-3">
-        <div class="container d-flex justify-content-between">
+        <div class="container d-flex flex-md-row flex-column justify-content-between gap-3">
             <a class="text-decoration-none text-dark" href="index.html">
                 <h1 class="fw-light h4"><span class="fw-bold">Earthquake</span> Donation</h1>
             </a>
-            <div class="d-flex gap-3">
+            <div class="d-flex gap-3 flex-md-row flex-column">
                 <button id="createPoolModalBtn" class="btn go-donation-btn outline black" type="button" data-bs-target="#createPool" data-bs-toggle="modal" style="opacity: .2; pointer-events: none; cursor: not-allowed;">Create Pool<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor">
                     <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
                     <path d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path>
                 </svg></button>
-                <button class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
+                <button id="walletConnectButton" class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
                 </div>
         </div>
     </header>
-    <div class="container mb-5" style="max-width: 1000px;">
+    <div class="container mb-5 search-div-cont">
         <h5 class="text-nowrap h1 mb-4 text-center"><span class="fw-bold">Search Pool</span><span class="fw-lighter">&nbsp;With Name</span></h5>
-        <div class="d-flex gap-3 align-items-center position-relative searchpoolnamediv">
+        <div class="d-flex gap-3 align-items-center position-relative searchpoolnamediv container">
             <input id="searchInput" type="text" class="form-control searchpool neu-shadow" placeholder="Search">
             <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-search fs-3 search-icon" style="color: var(--bs-blue);">
                 <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
             </svg>
             <button class="btn btn-primary go-donation-btn black searchbutton neu-shadow" type="button" onclick="searchByUser()">Search</button>
         </div>
-        <div id="search-result-div" class="mt-3"></div>
+        <div id="search-result-div container" class="mt-3"></div>
     </div>
     <div class="container pb-5">
         <h5 class="fw-lighter text-center mb-4 h1"><span class="fw-bold">Selected</span> Pools</h5>

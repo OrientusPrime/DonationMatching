@@ -895,12 +895,26 @@ async function createPool(
   foundationDonationAdressId,
   name
 ) {
+  Swal.fire({
+    title: "Please confirm Match Amount for creating new pool!",
+    text: "Thanks for your support!",
+    icon: "info",
+    confirmButtonText: "Close",
+  });
+
   const tx = await ourContract.createPool(
     matchAmount,
     deadline,
     foundationDonationAdressId,
     name
   );
+  await provider.waitForTransaction(tx.hash);
+  Swal.fire({
+    title: name + " pool is created successfully!",
+    text: "Thanks for your support!",
+    icon: "success",
+    confirmButtonText: "Close",
+  });
   console.log(`Transaction hash: ${tx.hash}`);
   return tx.hash;
 }
@@ -1043,10 +1057,23 @@ async function createNewPoolByUser() {
     let lastAllowedAmount = allowanceAmount;
     //1000000 ile çarpmayı unutma
     if (lastAllowedAmount < poolMatchAmount) {
-      approve(ourContractAddress, poolMatchAmount);
+      Swal.fire({
+        title: "Please confirm and wait approval request!",
+        text: "Your Allowance Amount will increase for creating new pool with your match amount",
+        icon: "info",
+        confirmButtonText: "Close",
+      });
+      txPool = approve(ourContractAddress, poolMatchAmount);
+      await provider.waitForTransaction(txPool.hash);
       console.log("ilk if WalletAdress: " + walletAddress);
       console.log(`ilk if Allowance: ${lastAllowedAmount}`);
       console.log(`ilk if Match Amount: ${poolMatchAmount}`);
+      await createPool(
+        poolMatchAmount,
+        poolDeadLine,
+        foundationDonationAdressId,
+        poolName
+      );
     } else {
       console.log(`else Match Amount: ${poolMatchAmount}`);
       console.log(`else Deadline: ${poolDeadLine}`);

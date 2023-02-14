@@ -1118,24 +1118,7 @@ async function createNewPoolByUser() {
           confirmButtonText: "Try Again",
         }).then(async (result) => {
           if (result.isConfirmed) {
-            Swal.fire({
-              showCloseButton: true,
-              showConfirmButton: false,
-              title: "Please confirm and wait approval request!",
-              text: "Your Allowance Amount will increase for donation",
-              icon: "info",
-            });
-            txPool = await approve(ourContractAddress, poolMatchAmount);
-            await provider.waitForTransaction(txPool.hash);
-            console.log("ilk if WalletAdress: " + walletAddress);
-            console.log(`ilk if Allowance: ${lastAllowedAmount}`);
-            console.log(`ilk if Match Amount: ${poolMatchAmount}`);
-            createPool(
-              poolMatchAmount,
-              poolDeadLine,
-              foundationDonationAdressId,
-              poolName
-            );
+            createNewPoolByUser();
           }
         });
       }
@@ -1231,13 +1214,13 @@ const handleDonateClick = async (event) => {
         text: "Your Allowance Amount will increase for donation",
         icon: "info",
       });
-      donateButton.classList.add("disabled");
       try {
         let donateApprove = await approve(ourContractAddress, donateAmount);
         const transactionReceipt = await provider.waitForTransaction(
           donateApprove.hash
         );
         console.log("Transaction confirmed:", transactionReceipt);
+        await donateWithMatch(encodedId, donateAmount);
       } catch (err) {
         await Swal.fire({
           showCloseButton: true,
@@ -1248,24 +1231,11 @@ const handleDonateClick = async (event) => {
           confirmButtonText: "Try Again",
         }).then(async (result) => {
           if (result.isConfirmed) {
-            Swal.fire({
-              showCloseButton: true,
-              showConfirmButton: false,
-              title: "Please confirm and wait approval request!",
-              text: "Your Allowance Amount will increase for donation",
-              icon: "info",
-            });
-            let donateApprove = await approve(ourContractAddress, donateAmount);
-            const transactionReceipt = await provider.waitForTransaction(
-              donateApprove.hash
-            );
-            console.log("Transaction confirmed:", transactionReceipt);
+            handleDonateClick(event);
           }
         });
       }
       // lastAllowedAmount = await getAllowance(walletAddress, ourContractAddress);
-      await donateWithMatch(encodedId, donateAmount);
-      donateButton.classList.remove("disabled");
     } else {
       donateButton.innerHTML =
         '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';

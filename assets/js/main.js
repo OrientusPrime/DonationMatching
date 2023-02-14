@@ -1092,9 +1092,12 @@ async function createNewPoolByUser() {
       Swal.fire({
         showCloseButton: true,
         showConfirmButton: false,
-        title: "Please confirm and wait approval request!",
+        title: "Please confirm and wait for approval request!",
         text: "Your Allowance Amount will increase for creating new pool with your match amount",
         icon: "info",
+        didOpen: () => {
+          Swal.showLoading();
+        },
       });
       try {
         txPool = await approve(ourContractAddress, poolMatchAmount);
@@ -1210,9 +1213,12 @@ const handleDonateClick = async (event) => {
       Swal.fire({
         showCloseButton: true,
         showConfirmButton: false,
-        title: "Please confirm and wait approval request!",
+        title: "Please confirm and wait for approval request!",
         text: "Your Allowance Amount will increase for donation",
         icon: "info",
+        didOpen: () => {
+          Swal.showLoading();
+        },
       });
       try {
         let donateApprove = await approve(ourContractAddress, donateAmount);

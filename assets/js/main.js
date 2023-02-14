@@ -602,18 +602,6 @@ const usdcABI = [
   },
 ];
 
-// window.addEventListener("load", function () {
-//   const walletConnectButton = document.querySelector("#walletConnectButton");
-//   if (walletConnectButton) {
-//     changeConnectBtn();
-//   }
-// });
-
-// async function changeConnectBtn() {
-//   walletConnectButton.innerHTML =
-//     'Wallet is conected <i class="metamask-icon"></i>';
-// }
-
 async function changeConnectBtnWalletId() {
   let firstFive = walletAddress.substring(0, 4);
   let lastThree = walletAddress.substring(walletAddress.length - 3);
@@ -628,13 +616,13 @@ async function changeConnectBtnWalletId() {
 
 function newConnection() {
   connect(async function () {
-    if (walletAddress) {
-      changeConnectBtnWalletId();
-    }
     let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
     lastAllowedAmount = allowanceAmount;
     updateCreatePoolBtnVisibility();
     loadDonationAddresses();
+    if (walletAddress) {
+      changeConnectBtnWalletId();
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const encodedId = urlParams.get("poolId");
@@ -822,7 +810,6 @@ async function getPoolInfo(poolId) {
 
 async function encode(name) {
   const encoded = await ourContract.encode(name);
-  // console.log("Encoded Name:", encoded);
   return encoded;
 }
 
@@ -970,10 +957,15 @@ async function createPool(
   } catch (err) {
     Swal.fire({
       showCloseButton: true,
-      showConfirmButton: false,
+      showConfirmButton: true,
       title: "Transaction failed!",
       text: "Please try again!",
       icon: "error",
+      confirmButtonText: "Try Again",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        createPool(matchAmount, deadline, foundationDonationAdressId, name);
+      }
     });
   }
 }
@@ -1006,25 +998,6 @@ async function checkDonateAmount(event) {
     }
   }
 }
-
-// async function donateByUser(event) {
-//   let poolCard = event.target.closest(".pool-card");
-//   let poolCardId = poolCard.id;
-//   const encodedId = await encode(poolCardId);
-//   console.log("pool card id" + encodedId);
-
-//   let donateAmount = await poolCard.querySelector(".donateAmountInput").value;
-//   let lastAllowedAmount = allowanceAmount;
-
-//   if (lastAllowedAmount < donateAmount) {
-//     approve(ourContractAddress, donateAmount);
-//     poolCard.querySelector(".lets-donate").innerHTML = "Approving USDC...";
-//   } else {
-//     // Donate action
-//     donateWithMatch(encodedId, donateAmount);
-//     getPoolInfo(encodedId);
-//   }
-// }
 
 const inputElements = document.querySelectorAll(".donateAmountInput");
 inputElements.forEach((inputElement) => {
@@ -1123,17 +1096,49 @@ async function createNewPoolByUser() {
         text: "Your Allowance Amount will increase for creating new pool with your match amount",
         icon: "info",
       });
-      txPool = await approve(ourContractAddress, poolMatchAmount);
-      await provider.waitForTransaction(txPool.hash);
-      console.log("ilk if WalletAdress: " + walletAddress);
-      console.log(`ilk if Allowance: ${lastAllowedAmount}`);
-      console.log(`ilk if Match Amount: ${poolMatchAmount}`);
-      createPool(
-        poolMatchAmount,
-        poolDeadLine,
-        foundationDonationAdressId,
-        poolName
-      );
+      try {
+        txPool = await approve(ourContractAddress, poolMatchAmount);
+        await provider.waitForTransaction(txPool.hash);
+        console.log("ilk if WalletAdress: " + walletAddress);
+        console.log(`ilk if Allowance: ${lastAllowedAmount}`);
+        console.log(`ilk if Match Amount: ${poolMatchAmount}`);
+        createPool(
+          poolMatchAmount,
+          poolDeadLine,
+          foundationDonationAdressId,
+          poolName
+        );
+      } catch (err) {
+        await Swal.fire({
+          showCloseButton: true,
+          showConfirmButton: true,
+          title: "Error!",
+          text: "Approve transaction failed",
+          icon: "error",
+          confirmButtonText: "Try Again",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              showCloseButton: true,
+              showConfirmButton: false,
+              title: "Please confirm and wait approval request!",
+              text: "Your Allowance Amount will increase for donation",
+              icon: "info",
+            });
+            txPool = await approve(ourContractAddress, poolMatchAmount);
+            await provider.waitForTransaction(txPool.hash);
+            console.log("ilk if WalletAdress: " + walletAddress);
+            console.log(`ilk if Allowance: ${lastAllowedAmount}`);
+            console.log(`ilk if Match Amount: ${poolMatchAmount}`);
+            createPool(
+              poolMatchAmount,
+              poolDeadLine,
+              foundationDonationAdressId,
+              poolName
+            );
+          }
+        });
+      }
     } else {
       console.log(`else Match Amount: ${poolMatchAmount}`);
       console.log(`else Deadline: ${poolDeadLine}`);
@@ -1206,28 +1211,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-
-// async function checkAllowedAmount(donateAmount, poolCard) {
-//   let poolCardId = poolCard.id;
-//   let encodedId = await encode(poolCardId);
-//   let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
-//   let lastAllowedAmount = allowanceAmount;
-//   if (lastAllowedAmount < donateAmount) {
-//     await approve(ourContractAddress, donateAmount);
-
-//     lastAllowedAmount = allowanceAmount;
-//     poolCard.querySelector(".lets-donate").classList.remove("disabled");
-
-//     await donateWithMatch(encodedId, donateAmount);
-
-//     poolCard.querySelector(".lets-donate").innerHTML =
-//       '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';
-//   } else {
-//     await donateWithMatch(encodedId, donateAmount);
-//     poolCard.querySelector(".lets-donate").innerHTML =
-//       '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';
-//   }
-// }
 
 const handleDonateClick = async (event) => {
   let poolCard = event.target.closest(".pool-card");

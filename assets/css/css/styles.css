@@ -408,12 +408,12 @@ thead tr.neu-shadow {
   cursor: not-allowed;
   pointer-events: none;
 }
-
+/*
 .walletadresonbtn{
   max-width: 5rem !important;
   overflow: hidden;
   text-overflow: ellipsis;
-}
+}*/
 
 /* only for xl screen*/
 @media (min-width: 1200px) {

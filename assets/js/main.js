@@ -737,6 +737,9 @@ async function donateWithMatch(poolId, amount) {
       amount +
       " USDC",
     icon: "info",
+    didOpen: () => {
+      Swal.showLoading();
+    },
   });
   try {
     const tx = await ourContract.donateWithMatch(poolId, amount);
@@ -935,6 +938,9 @@ async function createPool(
     title: "Please confirm Match Amount for creating new pool!",
     text: "Thanks for your support!",
     icon: "info",
+    didOpen: () => {
+      Swal.showLoading();
+    },
   });
 
   try {

@@ -181,45 +181,14 @@ function searchByUser() {
 }
 
 async function searchOnNewPage() {
-  let searchResultDiv = document.getElementById("search-result-div");
-
   const urlParams = new URLSearchParams(window.location.search);
   const poolId = urlParams.get("poolId");
   const poolName = await getPoolName(poolId);
   const pool = await getPool(poolId);
 
   if (poolName) {
-    const myPoolCard = `
-       <div id="${poolName}" class="pool-card p-4 neu-shadow">
-                <div class="loader-info">
-                    <div class="pool-card-header-div-mother">
-                        <div class="pool-card-header-div">
-                            <h4 class="poolname"> </h4>
-                            <div class="remain-day-div"><span class="remain-day-span">x</span><span>days left</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
-                                    <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
-                                    <path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path>
-                                </svg></div>
-                        </div>
-                        <small class="text-muted" style="font-size: .7rem; margin-top: -.15rem; display: block;">is matching your donations</small>
-                        <p><span class="fw-bold donation-adress-name-span">Donation Adress Name</span>&nbsp;is being funded</p>
-                    </div>
-                    <div class="raised-goadl-div">
-                        <div class="raised-with-logo-div"><span class="loader-percentage">Matched<span class="badge bg-white-50 ratio">x%</span></span></div><span class="loader-percentage">Total</span>
-                    </div>
-                    <div class="loader-bar-mother">
-                        <div class="loader-back loader-part">
-                            <div class="loader-front loader-part" style="width: 10%;"></div>
-                        </div>
-                    </div>
-                    <div class="raised-goadl-div">
-                        <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
-                    </div>
-                    <div class="mt-2 d-flex gap-2 w-100"><input type="number" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
-                        <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
-                </div>
-            </div>
-  `;
-    searchResultDiv.innerHTML = myPoolCard;
+    const myPoolCard = document.querySelector(`#mypoolcard`);
+    myPoolCard.style.display = 'block';
 
     const poolNameHeader = document.querySelector(".poolname");
     const usdcAmountSpan = document.querySelector(".usdcAmount");
@@ -267,7 +236,7 @@ async function handleCreatePool(
   deadline,
   foundationDonationAdressId,
   name
-) {
+){
   Swal.fire({
     showCloseButton: true,
     showConfirmButton: false,
@@ -354,10 +323,9 @@ function increaseDeadlineByUser() {
   const poolId = urlParams.get("poolId");
   const deadlineInput = document.getElementById("newdeadline");
   let newDeadlineDate = new Date(deadlineInput.value);
-
   let today = new Date();
-
   let diffDays = newDeadlineDate.getTime() - today.getTime();
+
   increaseDeadline(poolId, diffDays);
   console.log(` ${newDeadlineDate} deadline increased`);
 }
@@ -410,9 +378,6 @@ async function createNewPoolByUser() {
       try {
         txPool = await approve(ourContractAddress, poolMatchAmount);
         await provider.waitForTransaction(txPool.hash);
-        console.log("ilk if WalletAdress: " + walletAddress);
-        console.log(`ilk if Allowance: ${lastAllowedAmount}`);
-        console.log(`ilk if Match Amount: ${poolMatchAmount}`);
         handleCreatePool(
           poolMatchAmount,
           poolDeadLine,
@@ -479,7 +444,6 @@ async function displayPoolInfoHelper(poolCard) {
     loaderFront.style.width = `${cssRatio}`;
     remainDaySpan.textContent = remainTime;
     donationAdressNameSpan.textContent = donationAddressName;
-
     poolNameHeader.textContent = poolName;
 }
 
@@ -489,7 +453,6 @@ async function displayPoolInfo() {
   for (const poolCard of poolCards) {
       promises.push(displayPoolInfoHelper(poolCard));
   }
-
   await Promise.all(promises);
 }
 

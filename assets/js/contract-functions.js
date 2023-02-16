@@ -57,32 +57,26 @@ async function createPool(
 
 async function closePoolWithDonation(poolId) {
     const tx = await ourContract.closePoolWithDonation(poolId);
-    console.log(`Transaction hash: ${tx.hash}`);
 }
 
 async function closePoolWithWithdraw(poolId) {
     const tx = await ourContract.closePoolWithWithdraw(poolId);
-    console.log(`Transaction hash: ${tx.hash}`);
 }
 
 async function increaseDeadline(poolId, increaseDeadlineAmount) {
     const tx = await ourContract.increaseDeadline(poolId, increaseDeadlineAmount);
-    console.log(`Transaction hash: ${tx.hash}`);
 }
 
 async function increaseMaxMatch(poolId, increaseMaxMatchAmount) {
     const tx = await ourContract.increaseMaxMatch(poolId, increaseMaxMatchAmount);
-    console.log(`Transaction hash: ${tx.hash}`);
 }
 
 async function getAllowance(owner, spender) {
     let myAllowance = await usdcContract.allowance(owner, spender);
-    console.log("Allowance: " + myAllowance * 1000000);
     return myAllowance;
 }
 
 async function approve(spender, value) {
     let myApprove = await usdcContract.approve(spender, value);
-    console.log("Approve: " + myApprove);
     return myApprove;
 }

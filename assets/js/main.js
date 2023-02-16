@@ -464,24 +464,16 @@ async function displayPoolInfo() {
 
     const poolName = poolCard.id;
     const poolId = await encode(poolName);
-
-    let pool = await getPool(poolId)
-    console.log("Pool Info: " + pool);
-
-    let currentMatch = pool.currentMatched.toString();
-    let maximumMatch = pool.maximumMatch.toString();
-    let poolDeadline = pool.deadline.toString();
-    let donationAddress = pool.donationAddress;
-
-    let donationAddressName = await getDonationAddressName(donationAddress);
-
-    let remainTime = calculateDateDifference(poolDeadline);
-
-    let ratio = parseInt(currentMatch) / parseInt(maximumMatch);
-
-    console.log(poolName + "ratio=" + ratio);
-    let ratioPercent = (ratio * 100).toFixed(2) + "%";
-    let cssRatio = Math.floor(ratio * 100) + "%";
+    const pool = await getPool(poolId)
+    const currentMatch = pool.currentMatched.toString();
+    const maximumMatch = pool.maximumMatch.toString();
+    const poolDeadline = pool.deadline.toString();
+    const donationAddress = pool.donationAddress;
+    const donationAddressName = await getDonationAddressName(donationAddress);
+    const remainTime = calculateDateDifference(poolDeadline);
+    const ratio = parseInt(currentMatch) / parseInt(maximumMatch);
+    const ratioPercent = (ratio * 100).toFixed(2) + "%";
+    const cssRatio = Math.floor(ratio * 100) + "%";
 
     ratioSpan.textContent = ratioPercent;
     usdcAmountSpan.textContent = currentMatch + " USDC";

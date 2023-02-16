@@ -1,8 +1,3 @@
-const matchAmountInput = document.getElementById("matchAmountInput");
-const deadlineInput = document.getElementById("deadlineInput");
-const poolNameInput = document.getElementById("poolNameInput");
-const createPoolBtn = document.getElementById("createPoolBtn");
-
 let isopen = false;
 
 let provider,
@@ -49,7 +44,6 @@ async function connect(callback) {
   accounts = await provider.send("eth_requestAccounts", []);
   const network = await provider.getNetwork();
   const currentNetworkId = await network.chainId;
-  console.log(currentNetworkId);
   if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
     let alertText =
       "Network Name:\nAvalanche Testnet C-Chain\n\n" +
@@ -287,6 +281,7 @@ async function checkDonateAmount(event) {
     let poolCard = event.target.closest(".pool-card");
     let donateAmount = Number(poolCard.querySelector(".donateAmountInput").value);
     let allowanceAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+
     if (allowanceAmount > lastAllowedAmount) {
       lastAllowedAmount = allowanceAmount;
     }
@@ -424,7 +419,6 @@ async function displayPoolInfoHelper(poolCard) {
     const donationAdressNameSpan = poolCard.querySelector(
       ".donation-adress-name-span"
     );
-
     const poolName = poolCard.id;
     const poolId = await encode(poolName);
     const pool = await getPool(poolId)

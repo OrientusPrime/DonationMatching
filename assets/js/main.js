@@ -1,12 +1,7 @@
-const usdcAddress = "0x5425890298aed601595a70AB815c96711a31Bc65";
-const ourContractAddress = "0x3C46dB75D67e908F4841538047623A7cDabE298c";
-
 const matchAmountInput = document.getElementById("matchAmountInput");
 const deadlineInput = document.getElementById("deadlineInput");
 const poolNameInput = document.getElementById("poolNameInput");
 const createPoolBtn = document.getElementById("createPoolBtn");
-
-// const walletConnectBtn = document.getElementById("walletConnectButton");
 
 let isopen = false;
 
@@ -18,591 +13,7 @@ let provider,
   contract,
   lastAllowedAmount;
 
-// Define the Ethereum network ID
-const ETHEREUM_NETWORK_ID = 1;
-
-// Define the Avalanche network ID
-const AVALANCHE_NETWORK_ID = 43114;
-
-// Define the Avalanche fuji network ID
-const AVALANCHE_FUJI_NETWORK_ID = 43113;
-
-const abi = [
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint48",
-        name: "newDeadline",
-        type: "uint48",
-      },
-    ],
-    name: "DeadlineIncreased",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "uint256",
-        name: "donationAddressId",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "newDonationAddress",
-        type: "address",
-      },
-    ],
-    name: "DonationAddressAdded",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "donor",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "DonationMade",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "newMaxMatch",
-        type: "uint256",
-      },
-    ],
-    name: "MaxMatchIncreased",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "previousOwner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "OwnershipTransferred",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "remaining",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "recipient",
-        type: "address",
-      },
-    ],
-    name: "PoolClosedWithDonation",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "remaining",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "recipient",
-        type: "address",
-      },
-    ],
-    name: "PoolClosedWithWithdraw",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "maximumMatch",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "string",
-        name: "name",
-        type: "string",
-      },
-    ],
-    name: "PoolCreated",
-    type: "event",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newDonationAddress",
-        type: "address",
-      },
-      {
-        internalType: "string",
-        name: "_name",
-        type: "string",
-      },
-    ],
-    name: "addDonationAddress",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-    ],
-    name: "closePoolWithDonation",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-    ],
-    name: "closePoolWithWithdraw",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "_maximumMatch",
-        type: "uint256",
-      },
-      {
-        internalType: "uint48",
-        name: "_deadline",
-        type: "uint48",
-      },
-      {
-        internalType: "uint256",
-        name: "donationAddressID",
-        type: "uint256",
-      },
-      {
-        internalType: "string",
-        name: "_name",
-        type: "string",
-      },
-    ],
-    name: "createPool",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "donateWithMatch",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint48",
-        name: "increaseAmount",
-        type: "uint48",
-      },
-    ],
-    name: "increaseDeadline",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "poolId",
-        type: "bytes32",
-      },
-      {
-        internalType: "uint256",
-        name: "increaseAmount",
-        type: "uint256",
-      },
-    ],
-    name: "increaseMaxMatch",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "renounceOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "newOwner",
-        type: "address",
-      },
-    ],
-    name: "transferOwnership",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_USDC",
-        type: "address",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "constructor",
-  },
-  {
-    inputs: [],
-    name: "donationAddressCount",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    name: "donationAddresses",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "donationAddressNames",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "string",
-        name: "_name",
-        type: "string",
-      },
-    ],
-    name: "encode",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    stateMutability: "pure",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "owner",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    name: "poolExists",
-    outputs: [
-      {
-        internalType: "bool",
-        name: "",
-        type: "bool",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    name: "poolNames",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "",
-        type: "bytes32",
-      },
-    ],
-    name: "pools",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "currentMatched",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "maximumMatch",
-        type: "uint256",
-      },
-      {
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        internalType: "uint48",
-        name: "deadline",
-        type: "uint48",
-      },
-      {
-        internalType: "bool",
-        name: "closed",
-        type: "bool",
-      },
-      {
-        internalType: "address",
-        name: "donationAddress",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "USDC",
-    outputs: [
-      {
-        internalType: "contract IERC20",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
-const usdcABI = [
-  {
-    constant: true,
-    inputs: [
-      {
-        name: "_owner",
-        type: "address",
-      },
-      {
-        name: "_spender",
-        type: "address",
-      },
-    ],
-    name: "allowance",
-    outputs: [
-      {
-        name: "",
-        type: "uint256",
-      },
-    ],
-    payable: false,
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        name: "_spender",
-        type: "address",
-      },
-      {
-        name: "_value",
-        type: "uint256",
-      },
-    ],
-    name: "approve",
-    outputs: [
-      {
-        name: "",
-        type: "bool",
-      },
-    ],
-    payable: false,
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-];
-
-async function changeConnectBtnWalletId() {
+function changeConnectBtnWalletId() {
   let firstFive = walletAddress.substring(0, 4);
   let lastThree = walletAddress.substring(walletAddress.length - 3);
   let shortenedValue = firstFive + "..." + lastThree;
@@ -625,8 +36,8 @@ function newConnection() {
     }
 
     const urlParams = new URLSearchParams(window.location.search);
-    const encodedId = urlParams.get("poolId");
-    if (encodedId) {
+    const poolId = urlParams.get("poolId");
+    if (poolId) {
       await searchOnNewPage();
     } else {
       await displayPoolInfo();
@@ -677,7 +88,7 @@ async function connect(callback) {
   }
 }
 
-async function updateCreatePoolBtnVisibility() {
+function updateCreatePoolBtnVisibility() {
   const createPoolModalBtn = document.getElementById("createPoolModalBtn");
   if (walletAddress === undefined) {
     createPoolModalBtn.style.opacity = ".2";
@@ -701,29 +112,20 @@ function calculateDateDifference(deadlineDate) {
   return diffDays;
 }
 
-async function getDonationAddressName(adress) {
-  const name = await ourContract.donationAddressNames(adress);
-  return name;
-}
 
 async function loadDonationAddresses() {
-  const count = await ourContract.donationAddressCount();
+  const count = await getDonationAddressCount();
   let options = "";
   for (let i = 0; i < count; i++) {
-    const adress = await ourContract.donationAddresses(i);
-    const name = await ourContract.donationAddressNames(adress);
+    const address = await getDonationAddress(i);
+    const name = await getDonationAddressName(address);
     options += '<option value="' + i + '">' + name + "</option>";
   }
   document.getElementById("donationAddressSelect").innerHTML = options;
 }
 
-async function getPoolName(poolId) {
-  const myPoolName = await ourContract.poolNames(poolId);
-  console.log("Pool Name: " + myPoolName);
-  return await ourContract.poolNames(poolId);
-}
 
-async function donateWithMatch(poolId, amount) {
+async function handleDonateWithMatch(poolId, amount) {
   let donatedPoolName = await getPoolName(poolId);
   Swal.fire({
     showCloseButton: true,
@@ -742,7 +144,7 @@ async function donateWithMatch(poolId, amount) {
     },
   });
   try {
-    const tx = await ourContract.donateWithMatch(poolId, amount);
+    const tx = await donateWithMatch(poolId, amount);
     await provider.waitForTransaction(tx.hash);
     Swal.fire({
       showCloseButton: true,
@@ -762,76 +164,28 @@ async function donateWithMatch(poolId, amount) {
       confirmButtonText: "Try Again",
     }).then((result) => {
       if (result.isConfirmed) {
-        donateWithMatch(poolId, amount);
+        handleDonateWithMatch(poolId, amount);
       }
     });
   }
 }
 
-// Call the allowance function
-async function getAllowance(owner, spender) {
-  let myAllowance = await usdcContract.allowance(owner, spender);
-  console.log("Allowance: " + myAllowance * 1000000);
-  return await myAllowance;
-}
-
-// Call the approve function
-async function approve(spender, value) {
-  let myApprove = usdcContract.approve(spender, value);
-  console.log("Approve: " + myApprove);
-  return await myApprove;
-}
-
-// get the information about a pool with a given poolId
-async function getPoolInfo(poolId) {
-  let pool = await ourContract.pools(poolId);
-  console.log("Pool Info: " + pool);
-
-  let currentMatched = pool.currentMatched.toString();
-  let maximumMatch = pool.maximumMatch.toString();
-  let owner = pool.owner;
-  let deadline = pool.deadline.toString();
-  let closed = pool.closed;
-  let donationAddress = pool.donationAddress;
-
-  console.log("Current Matched: " + currentMatched);
-  console.log("Maximum Match: " + maximumMatch);
-  console.log("Owner: " + owner);
-  console.log("Deadline: " + deadline);
-  console.log("Closed: " + closed);
-  console.log("Donation Address: " + donationAddress);
-  return [
-    await ourContract.pools(poolId),
-    currentMatched,
-    maximumMatch,
-    owner,
-    deadline,
-    closed,
-    donationAddress,
-  ];
-}
-
-async function encode(name) {
-  const encoded = await ourContract.encode(name);
-  return encoded;
-}
-
-async function searchByUser() {
+function searchByUser() {
   if (ourContract === undefined) {
     connect(async function () {
       const searchInput = document.querySelector("#searchInput");
       const searchName = searchInput.value;
-      encode(searchName).then((encodedName) => {
-        console.log("Pool ID: " + encodedName);
-        window.location.href = "result.html?poolId=" + encodedName;
+      encode(searchName).then((poolId) => {
+        console.log("Pool ID: " + poolId);
+        window.location.href = "result.html?poolId=" + poolId;
       });
     });
   } else {
     const searchInput = document.querySelector("#searchInput");
     const searchName = searchInput.value;
-    encode(searchName).then((encodedName) => {
-      console.log("Pool ID: " + encodedName);
-      window.location.href = "result.html?poolId=" + encodedName;
+    encode(searchName).then((poolId) => {
+      console.log("Pool ID: " + poolId);
+      window.location.href = "result.html?poolId=" + poolId;
     });
   }
 }
@@ -840,9 +194,9 @@ async function searchOnNewPage() {
   let searchResultDiv = document.getElementById("search-result-div");
 
   const urlParams = new URLSearchParams(window.location.search);
-  const encodedId = urlParams.get("poolId");
-  const poolName = await getPoolName(encodedId);
-  const poolInfo = await getPoolInfo(encodedId);
+  const poolId = urlParams.get("poolId");
+  const poolName = await getPoolName(poolId);
+  const pool = await getPool(poolId);
 
   if (poolName) {
     const myPoolCard = `
@@ -887,10 +241,10 @@ async function searchOnNewPage() {
       ".donation-adress-name-span"
     );
 
-    const maximumMatch = poolInfo[2];
-    const currentMatch = poolInfo[1];
-    const poolDeadline = poolInfo[4];
-    const donationAddress = poolInfo[6];
+    const maximumMatch = pool.maximumMatch.toString();
+    const currentMatch = pool.currentMatched.toString();
+    const poolDeadline = pool.deadline.toString();
+    const donationAddress = pool.donationAddress;
     const donationAddressName = await getDonationAddressName(donationAddress);
 
     let remainTime = calculateDateDifference(poolDeadline);
@@ -913,20 +267,13 @@ async function searchOnNewPage() {
   }
 }
 
-function beforeSearchOnNewPage() {
-  connect(async function () {
-    searchOnNewPage();
-    updateCreatePoolBtnVisibility();
-  });
-}
-
-function searchPoolCard() {
-  searchByUser(async function () {
+const searchPoolCard = () => {
+  searchByUser(() => {
     searchResultDiv.innerHTML = myPoolCard;
   });
-}
+};
 
-async function createPool(
+async function handleCreatePool(
   matchAmount,
   deadline,
   foundationDonationAdressId,
@@ -944,7 +291,7 @@ async function createPool(
   });
 
   try {
-    let pooltx = await ourContract.createPool(
+    let pooltx = await createPool(
       matchAmount,
       deadline,
       foundationDonationAdressId,
@@ -970,21 +317,11 @@ async function createPool(
       confirmButtonText: "Try Again",
     }).then((result) => {
       if (result.isConfirmed) {
-        createPool(matchAmount, deadline, foundationDonationAdressId, name);
+        handleCreatePool(matchAmount, deadline, foundationDonationAdressId, name);
       }
     });
   }
 }
-
-// Approve transaction
-const approveTransaction = async () => {
-  // Code to send the approve transaction
-  // Wait for the transaction to be confirmed
-  const transactionReceipt = await provider.waitForTransaction(transactionHash);
-  console.log("Transaction confirmed:", transactionReceipt);
-  let allowanceAmount = await getAllowance(walletAddress, ourContractAddress);
-  let lastAllowedAmount = allowanceAmount;
-};
 
 async function checkDonateAmount(event) {
   if (walletAddress === undefined) {
@@ -1010,12 +347,6 @@ inputElements.forEach((inputElement) => {
   inputElement.addEventListener("input", checkDonateAmount);
 });
 
-// Call the closePoolWithDonation function
-async function closePoolWithDonation(poolId) {
-  const tx = await ourContract.closePoolWithDonation(poolId);
-  console.log(`Transaction hash: ${tx.hash}`);
-}
-
 async function closePoolWithDonationByUser() {
   const urlParams = new URLSearchParams(window.location.search);
   const poolId = urlParams.get("poolId");
@@ -1023,42 +354,24 @@ async function closePoolWithDonationByUser() {
   console.log(`pool closed with donation`);
 }
 
-// Call the closePoolWithWithdraw function
-async function closePoolWithWithdraw(poolId) {
-  const tx = await ourContract.closePoolWithWithdraw(poolId);
-  console.log(`Transaction hash: ${tx.hash}`);
-}
-
-async function closePoolWithWithdrawByUser() {
+function closePoolWithWithdrawByUser() {
   const urlParams = new URLSearchParams(window.location.search);
   const poolId = urlParams.get("poolId");
   closePoolWithWithdraw(poolId);
   console.log(`pool closed with donation`);
 }
 
-// Call the increaseDeadline function
-async function increaseDeadline(poolId, increaseDeadlineAmount) {
-  const tx = await ourContract.increaseDeadline(poolId, increaseDeadlineAmount);
-  console.log(`Transaction hash: ${tx.hash}`);
-}
-
-async function increaseDeadlineByUser() {
+function increaseDeadlineByUser() {
   const urlParams = new URLSearchParams(window.location.search);
-  const encodedName = urlParams.get("poolId");
+  const poolId = urlParams.get("poolId");
   const deadlineInput = document.getElementById("newdeadline");
   let newDeadlineDate = new Date(deadlineInput.value);
 
   let today = new Date();
 
   let diffDays = newDeadlineDate.getTime() - today.getTime();
-  increaseDeadline(encodedName, diffDays);
+  increaseDeadline(poolId, diffDays);
   console.log(` ${newDeadlineDate} deadline increased`);
-}
-
-// Call the increaseMaxMatch function
-async function increaseMaxMatch(poolId, increaseMaxMatchAmount) {
-  const tx = await ourContract.increaseMaxMatch(poolId, increaseMaxMatchAmount);
-  console.log(`Transaction hash: ${tx.hash}`);
 }
 
 async function increaseMaxMatchByUser() {
@@ -1095,6 +408,7 @@ async function createNewPoolByUser() {
     let lastAllowedAmount = allowanceAmount;
     //1000000 ile çarpmayı unutma
     if (lastAllowedAmount < poolMatchAmount) {
+      console.log("createNewPoolByUser lastAllowedAmount < poolMatchAmount, walletAddress: " + walletAddress);
       Swal.fire({
         showCloseButton: true,
         showConfirmButton: false,
@@ -1111,7 +425,7 @@ async function createNewPoolByUser() {
         console.log("ilk if WalletAdress: " + walletAddress);
         console.log(`ilk if Allowance: ${lastAllowedAmount}`);
         console.log(`ilk if Match Amount: ${poolMatchAmount}`);
-        createPool(
+        handleCreatePool(
           poolMatchAmount,
           poolDeadLine,
           foundationDonationAdressId,
@@ -1137,7 +451,7 @@ async function createNewPoolByUser() {
       console.log(`else Pool Name: ${poolName}`);
       console.log(`else Allowance: ${lastAllowedAmount}`);
       console.log(`else Match Amount: ${poolMatchAmount}`);
-      createPool(
+      handleCreatePool(
         poolMatchAmount,
         poolDeadLine,
         foundationDonationAdressId,
@@ -1160,16 +474,19 @@ async function displayPoolInfo() {
       ".donation-adress-name-span"
     );
 
-    const poolId = poolCard.id;
+    const poolName = poolCard.id;
+    const poolId = await encode(poolName);
 
-    const encodedId = await encode(poolId);
+    let pool = await getPool(poolId)
+    console.log("Pool Info: " + pool);
 
-    const poolName = await getPoolName(encodedId);
-    const poolInfo = await getPoolInfo(encodedId);
-    const maximumMatch = poolInfo[2];
-    const currentMatch = poolInfo[1];
-    const poolDeadline = poolInfo[4];
-    let donationAddress = poolInfo[6];
+    let currentMatch = pool.currentMatched.toString();
+    let maximumMatch = pool.maximumMatch.toString();
+    let owner = pool.owner;
+    let poolDeadline = pool.deadline.toString();
+    let closed = pool.closed;
+    let donationAddress = pool.donationAddress;
+
     let donationAddressName = await getDonationAddressName(donationAddress);
 
     let remainTime = calculateDateDifference(poolDeadline);
@@ -1194,11 +511,11 @@ async function displayPoolInfo() {
 document.addEventListener("DOMContentLoaded", function () {
   const poolCards = document.querySelectorAll(".pool-card");
   poolCards.forEach(function (poolCard) {
-    const poolName = poolCard.querySelector(".poolname");
-    poolName.addEventListener("click", function () {
-      const poolId = poolCard.getAttribute("id");
-      encode(poolId).then(function (encodedId) {
-        window.location.href = "result.html?poolId=" + encodedId;
+    const pool = poolCard.querySelector(".poolname");
+    pool.addEventListener("click", function () {
+      const poolName = poolCard.getAttribute("id");
+      encode(poolName).then(function (poolId) {
+        window.location.href = "result.html?poolId=" + poolId;
       });
     });
   });
@@ -1206,9 +523,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const handleDonateClick = async (event) => {
   let poolCard = event.target.closest(".pool-card");
-  let poolCardId = poolCard.id;
-  let encodedId = await encode(poolCardId);
-  console.log("pool card id" + encodedId);
+  let poolName = poolCard.id;
+  let poolId = await encode(poolName);
+  console.log("pool card id" + poolId);
   donateAmount = poolCard.querySelector(".donateAmountInput").value;
   if (donateAmount) {
     lastAllowedAmount = await getAllowance(walletAddress, ourContractAddress);
@@ -1232,7 +549,7 @@ const handleDonateClick = async (event) => {
           donateApprove.hash
         );
         console.log("Transaction confirmed:", transactionReceipt);
-        await donateWithMatch(encodedId, donateAmount);
+        await handleDonateWithMatch(poolId, donateAmount);
       } catch (err) {
         await Swal.fire({
           showCloseButton: true,
@@ -1252,8 +569,8 @@ const handleDonateClick = async (event) => {
       donateButton.innerHTML =
         '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';
       donateButton.classList.remove("disabled");
-      console.log("handleDonateClick çalıştı");
-      await donateWithMatch(encodedId, donateAmount);
+      console.log("handleDonateClick calisti");
+      await handleDonateWithMatch(poolId, donateAmount);
     }
   } else {
     Swal.fire({

@@ -449,9 +449,7 @@ async function createNewPoolByUser() {
   }
 }
 
-async function displayPoolInfo() {
-  const poolCards = document.querySelectorAll(".pool-card");
-  for (const poolCard of poolCards) {
+async function displayPoolInfoHelper(poolCard) {
     const poolNameHeader = poolCard.querySelector(".poolname");
     const usdcAmountSpan = poolCard.querySelector(".usdcAmount");
     const matchAmountSpan = poolCard.querySelector(".pooltotalamount");
@@ -483,7 +481,16 @@ async function displayPoolInfo() {
     donationAdressNameSpan.textContent = donationAddressName;
 
     poolNameHeader.textContent = poolName;
+}
+
+async function displayPoolInfo() {
+  const poolCards = document.querySelectorAll(".pool-card");
+  let promises = [];
+  for (const poolCard of poolCards) {
+      promises.push(displayPoolInfoHelper(poolCard));
   }
+
+  await Promise.all(promises);
 }
 
 document.addEventListener("DOMContentLoaded", function () {

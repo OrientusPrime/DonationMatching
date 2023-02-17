@@ -229,6 +229,7 @@ async function searchOnNewPage() {
 
   if (poolName) {
     const myPoolCard = document.querySelector(`#mypoolcard`);
+    myPoolCard.id = poolName;
     //myPoolCard.style.display = 'block';
 
     const poolNameHeader = document.querySelector(".poolname");

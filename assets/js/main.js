@@ -40,31 +40,71 @@ function newConnection() {
 }
 
 async function connect(callback) {
-  provider = new ethers.providers.Web3Provider(window.ethereum);
+  provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+
+  provider.on("network", (newNetwork, oldNetwork) => {
+    // When a Provider makes its initial connection, it emits a "network"
+    // event with a null oldNetwork along with the newNetwork. So, if the
+    // oldNetwork exists, it represents a changing network
+    if (oldNetwork) {
+        window.location.reload();
+    }
+  });
+
   accounts = await provider.send("eth_requestAccounts", []);
   const network = await provider.getNetwork();
   const currentNetworkId = await network.chainId;
+  
   if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
-    let alertText =
-      "Network Name:\nAvalanche Testnet C-Chain\n\n" +
-      "Network URL:\nhttps://api.avax-test.network/ext/bc/C/rpc\n\n" +
-      "Network Name:\nAvalanche Testnet C-Chain \n\n" +
-      "Chain ID:\n43113 \n\n" +
-      "Currency Symbol:\nAVAX \n\n" +
-      "Block Explorer URL:\nhttps://testnet.snowtrace.io/ \n";
-
+    console.log("trying switch network");
     Swal.fire({
       showCloseButton: true,
       showConfirmButton: false,
-      title: "Please connect to Avalanche Fuji Network",
-      html: "<pre>" + alertText + "</pre>",
-      customClass: {
-        popup: "format-pre",
-      },
+      title: "Unsupported Network",
+      text: "Please change your dapp browser to Avalanche Fuji Network",
       icon: "error",
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
+    try {
+      await ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0xA869' }],
+      });
+    } catch (switchError) {
+      // This error code indicates that the chain has not been added to MetaMask.
+      if (switchError.code === 4902) {
+        console.log("can't find network");
+        try {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [
+              {
+                chainId: '0xA869',
+                chainName: 'Avalanche Fuji C-Chain',
+                nativeCurrency: {
+                  name: 'AVAX',
+                  symbol: 'AVAX', // 2-6 characters long
+                  decimals: 18,
+                },
+                rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'] /* ... */,
+                blockExplorerUrls: ['https://testnet.snowtrace.io/'] /* ... */,
+              },
+            ],
+          });
+        } catch (addError) {
+          // handle "add" error
+        }
+      }
+      // handle other "switch" errors
+    }
+    Swal.close();
+    //newConnection();
+    
+    
 
-    throw new Error("Unsupported network");
+    
   } else {
     signer = provider.getSigner();
     walletAddress = await signer.getAddress();

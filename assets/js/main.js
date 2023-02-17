@@ -164,14 +164,13 @@ async function handleDonateWithMatch(poolId, amount) {
   Swal.fire({
     showCloseButton: false,
     showConfirmButton: false,
-    title: "Please confirm your donation",
+    title: "Please confirm your generous contribution",
     text:
-      "your donation will send to " +
-      donatedPoolName +
-      " pool" +
-      " and your donation amount is " +
+      "Your donation of " +
       amount +
-      " USDC",
+      " USDC will be matched by " +
+      donatedPoolName +
+      " pool.",
     icon: "info",
     didOpen: () => {
       Swal.showLoading();
@@ -185,7 +184,7 @@ async function handleDonateWithMatch(poolId, amount) {
       showCloseButton: true,
       showConfirmButton: false,
       title: "Your donation is successful",
-      text: "Thanks for your donation to the " + donatedPoolName + " pool",
+      text: "Your donation is doubled by " + donatedPoolName + " pool.",
       icon: "success",
     });
     return tx.hash;
@@ -230,7 +229,7 @@ async function searchOnNewPage() {
 
   if (poolName) {
     const myPoolCard = document.querySelector(`#mypoolcard`);
-    myPoolCard.style.display = 'block';
+    //myPoolCard.style.display = 'block';
 
     const poolNameHeader = document.querySelector(".poolname");
     const usdcAmountSpan = document.querySelector(".usdcAmount");
@@ -302,7 +301,7 @@ async function handleCreatePool(
     Swal.fire({
       showCloseButton: true,
       showConfirmButton: false,
-      title: name + " pool is created successfully!",
+      title: name + " Pool is created successfully!",
       text: "Thanks for your support!",
       icon: "success",
     });
@@ -373,6 +372,7 @@ function increaseDeadlineByUser() {
   increaseDeadline(poolId, diffDays);
   console.log(` ${newDeadlineDate} deadline increased`);
 }
+
 
 async function increaseMaxMatchByUser() {
   const urlParams = new URLSearchParams(window.location.search);

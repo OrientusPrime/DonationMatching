@@ -22,7 +22,10 @@ function changeConnectBtnWalletId() {
 
 function newConnection() {
   connect(async function () {
-    lastAllowedAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+    if (typeof window.ethereum !== 'undefined') {
+      lastAllowedAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+    }
+    
     updateCreatePoolBtnVisibility();
     loadDonationAddresses();
     if (walletAddress) {
@@ -40,81 +43,93 @@ function newConnection() {
 }
 
 async function connect(callback) {
-  provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+  if (typeof window.ethereum === 'undefined') {
+    console.log('MetaMask is not installed!');
+    const rpcUrl = 'https://api.avax-test.network/ext/bc/C/rpc';
+    const chainId = 43113;
 
-  provider.on("network", (newNetwork, oldNetwork) => {
-    // When a Provider makes its initial connection, it emits a "network"
-    // event with a null oldNetwork along with the newNetwork. So, if the
-    // oldNetwork exists, it represents a changing network
-    if (oldNetwork) {
-        window.location.reload();
-    }
-  });
+    provider = new ethers.providers.JsonRpcProvider(rpcUrl, { chainId });
 
-  accounts = await provider.send("eth_requestAccounts", []);
-  const network = await provider.getNetwork();
-  const currentNetworkId = await network.chainId;
-  
-  if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
-    console.log("trying switch network");
-    Swal.fire({
-      showCloseButton: false,
-      showConfirmButton: false,
-      title: "Unsupported Network",
-      text: "Please change your dapp browser to Avalanche Fuji Network",
-      icon: "error",
-      didOpen: () => {
-        Swal.showLoading();
-      },
-      allowOutsideClick: false,
+    provider.getBlockNumber().then((blockNumber) => {
+      console.log(`The current block number is: ${blockNumber}`);
     });
-    try {
-      await ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0xA869' }],
-      });
-    } catch (switchError) {
-      // This error code indicates that the chain has not been added to MetaMask.
-      if (switchError.code === 4902) {
-        console.log("can't find network");
-        try {
-          await ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-              {
-                chainId: '0xA869',
-                chainName: 'Avalanche Fuji C-Chain',
-                nativeCurrency: {
-                  name: 'AVAX',
-                  symbol: 'AVAX', // 2-6 characters long
-                  decimals: 18,
-                },
-                rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'] /* ... */,
-                blockExplorerUrls: ['https://testnet.snowtrace.io/'] /* ... */,
-              },
-            ],
-          });
-        } catch (addError) {
-          // handle "add" error
-        }
-      }
-      // handle other "switch" errors
-    }
-    Swal.close();
-    //newConnection();
-    
-    
-
-    
-  } else {
-    signer = provider.getSigner();
-    walletAddress = await signer.getAddress();
-    ourContract = new ethers.Contract(ourContractAddress, abi, signer);
-    usdcContract = new ethers.Contract(usdcAddress, usdcABI, signer);
-    contract = new ethers.Contract(ourContractAddress, abi, signer);
-
-    isopen = true;
+    ourContract = new ethers.Contract(ourContractAddress, abi, provider);
+    usdcContract = new ethers.Contract(usdcAddress, usdcABI, provider);
+    let deneme = await encode("OrientusPrime");
+    console.log(deneme);
+    let poolname = await getPoolName("0x13bcbe6237c29f44bdad77393257dc878d8dcad3841369b4044c1f38a11facf2");
+    console.log(poolname);
     callback();
+  } else {
+    provider = new ethers.providers.Web3Provider(window.ethereum, "any");
+    provider.on("network", (newNetwork, oldNetwork) => {
+      // When a Provider makes its initial connection, it emits a "network"
+      // event with a null oldNetwork along with the newNetwork. So, if the
+      // oldNetwork exists, it represents a changing network
+      if (oldNetwork) {
+          window.location.reload();
+      }
+    });
+
+    accounts = await provider.send("eth_requestAccounts", []);
+    const network = await provider.getNetwork();
+    const currentNetworkId = await network.chainId;
+    
+    if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
+      console.log("trying switch network");
+      Swal.fire({
+        showCloseButton: false,
+        showConfirmButton: false,
+        title: "Unsupported Network",
+        text: "Please change your dapp browser to Avalanche Fuji Network",
+        icon: "error",
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        allowOutsideClick: false,
+      });
+      try {
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0xA869' }],
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          console.log("can't find network");
+          try {
+            await ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [
+                {
+                  chainId: '0xA869',
+                  chainName: 'Avalanche Fuji C-Chain',
+                  nativeCurrency: {
+                    name: 'AVAX',
+                    symbol: 'AVAX', // 2-6 characters long
+                    decimals: 18,
+                  },
+                  rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'] /* ... */,
+                  blockExplorerUrls: ['https://testnet.snowtrace.io/'] /* ... */,
+                },
+              ],
+            });
+          } catch (addError) {
+            // handle "add" error
+          }
+        }
+        // handle other "switch" errors
+      }
+      Swal.close();
+      //newConnection();
+    }else {
+      signer = provider.getSigner();
+      walletAddress = await signer.getAddress();
+      ourContract = new ethers.Contract(ourContractAddress, abi, signer);
+      usdcContract = new ethers.Contract(usdcAddress, usdcABI, signer);
+      isopen = true;
+      callback();
+    }
   }
 }
 

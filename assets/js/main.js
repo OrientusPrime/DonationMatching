@@ -49,16 +49,8 @@ async function connect(callback) {
     const chainId = 43113;
 
     provider = new ethers.providers.JsonRpcProvider(rpcUrl, { chainId });
-
-    provider.getBlockNumber().then((blockNumber) => {
-      console.log(`The current block number is: ${blockNumber}`);
-    });
     ourContract = new ethers.Contract(ourContractAddress, abi, provider);
     usdcContract = new ethers.Contract(usdcAddress, usdcABI, provider);
-    let deneme = await encode("OrientusPrime");
-    console.log(deneme);
-    let poolname = await getPoolName("0x13bcbe6237c29f44bdad77393257dc878d8dcad3841369b4044c1f38a11facf2");
-    console.log(poolname);
     callback();
   } else {
     provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -96,7 +88,6 @@ async function connect(callback) {
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
         if (switchError.code === 4902) {
-          console.log("can't find network");
           try {
             await ethereum.request({
               method: 'wallet_addEthereumChain',
@@ -453,11 +444,6 @@ async function createNewPoolByUser() {
         });
       }
     } else {
-      console.log(`else Match Amount: ${poolMatchAmount}`);
-      console.log(`else Deadline: ${poolDeadLine}`);
-      console.log(`else Pool Name: ${poolName}`);
-      console.log(`else Allowance: ${lastAllowedAmount}`);
-      console.log(`else Match Amount: ${poolMatchAmount}`);
       handleCreatePool(
         poolMatchAmount,
         poolDeadLine,
@@ -531,7 +517,6 @@ const handleDonateClick = async (event) => {
     lastAllowedAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
     const donateButton = poolCard.querySelector(".lets-donate");
     if (lastAllowedAmount < donateAmount) {
-      // donateButton.innerHTML = "<span>Approving USDC...<span>";
       Swal.fire({
         showCloseButton: false,
         showConfirmButton: false,
@@ -564,7 +549,6 @@ const handleDonateClick = async (event) => {
           }
         });
       }
-      // lastAllowedAmount = await getAllowance(walletAddress, ourContractAddress);
     } else {
       donateButton.innerHTML =
         '<span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg>';

@@ -297,7 +297,7 @@ async function handleCreatePool(
       foundationDonationAdressId,
       name
     );
-    provider.waitForTransaction(pooltx.hash);
+    await provider.waitForTransaction(pooltx.hash);
     Swal.fire({
       showCloseButton: true,
       showConfirmButton: false,

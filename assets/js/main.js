@@ -561,10 +561,9 @@ const handleDonateClick = async (event) => {
     Swal.fire({
       showCloseButton: true,
       showConfirmButton: false,
-      title: "Donation amount can't be 0!",
-      text: "if you want to make a donation, please enter a donation amount",
+      title: "Donation amount is not valid!",
+      text: "To make a contribution, please enter a valid donation amount.",
       icon: "warning",
-      confirmButtonText: "Oh! Okay...",
     });
   }
 };

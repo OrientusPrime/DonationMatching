@@ -58,7 +58,7 @@ async function connect(callback) {
   if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
     console.log("trying switch network");
     Swal.fire({
-      showCloseButton: true,
+      showCloseButton: false,
       showConfirmButton: false,
       title: "Unsupported Network",
       text: "Please change your dapp browser to Avalanche Fuji Network",
@@ -66,6 +66,7 @@ async function connect(callback) {
       didOpen: () => {
         Swal.showLoading();
       },
+      allowOutsideClick: false,
     });
     try {
       await ethereum.request({
@@ -155,7 +156,7 @@ async function loadDonationAddresses() {
 async function handleDonateWithMatch(poolId, amount) {
   let donatedPoolName = await getPoolName(poolId);
   Swal.fire({
-    showCloseButton: true,
+    showCloseButton: false,
     showConfirmButton: false,
     title: "Please confirm your donation",
     text:
@@ -169,6 +170,7 @@ async function handleDonateWithMatch(poolId, amount) {
     didOpen: () => {
       Swal.showLoading();
     },
+    allowOutsideClick: false,
   });
   try {
     const tx = await donateWithMatch(poolId, amount);
@@ -272,7 +274,7 @@ async function handleCreatePool(
   name
 ){
   Swal.fire({
-    showCloseButton: true,
+    showCloseButton: false,
     showConfirmButton: false,
     title: "Please confirm Match Amount for creating new pool!",
     text: "Thanks for your support!",
@@ -280,6 +282,7 @@ async function handleCreatePool(
     didOpen: () => {
       Swal.showLoading();
     },
+    allowOutsideClick: false,
   });
 
   try {
@@ -401,7 +404,7 @@ async function createNewPoolByUser() {
     if (lastAllowedAmount < poolMatchAmount) {
       console.log("createNewPoolByUser lastAllowedAmount < poolMatchAmount, walletAddress: " + walletAddress);
       Swal.fire({
-        showCloseButton: true,
+        showCloseButton: false,
         showConfirmButton: false,
         title: "Please confirm and wait for approval request!",
         text: "Your Allowance Amount will increase for creating new pool with your match amount",
@@ -409,6 +412,7 @@ async function createNewPoolByUser() {
         didOpen: () => {
           Swal.showLoading();
         },
+        allowOutsideClick: false,
       });
       try {
         txPool = await approve(ourContractAddress, poolMatchAmount);
@@ -514,7 +518,7 @@ const handleDonateClick = async (event) => {
     if (lastAllowedAmount < donateAmount) {
       // donateButton.innerHTML = "<span>Approving USDC...<span>";
       Swal.fire({
-        showCloseButton: true,
+        showCloseButton: false,
         showConfirmButton: false,
         title: "Please confirm and wait for approval request!",
         text: "Your Allowance Amount will increase for donation",
@@ -522,6 +526,7 @@ const handleDonateClick = async (event) => {
         didOpen: () => {
           Swal.showLoading();
         },
+        allowOutsideClick: false,
       });
       try {
         let donateApprove = await approve(ourContractAddress, donateAmount);

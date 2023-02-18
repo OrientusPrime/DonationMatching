@@ -19,18 +19,34 @@
 
 <body onload="newConnection()">
     <header class="mb-5 py-3">
-        <div class="container d-flex justify-content-between">
-            <a class="text-decoration-none text-dark" href="index.html">
-                <h1 class="fw-light h4"><span class="fw-bold">Earthquake</span> Donation</h1>
-            </a>
-            <div class="d-flex gap-3">
-                <button id="createPoolModalBtn" class="btn go-donation-btn outline black" type="button" data-bs-target="#createPool" data-bs-toggle="modal" style="opacity: .2; pointer-events: none; cursor: not-allowed;">Create Pool<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor">
-                    <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+        <nav class="navbar navbar-expand-lg container navbar-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="index.html"><h1 class="fw-light h4"><span class="fw-bold">Earthquake</span> Donation</h1></a>
+              <button class="navbar-toggler" style="z-index: 9;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-3">
+
+                  <li class="justify-content-center justify-content-lg-start d-flex">
+                    <button id="" class="btn go-donation-btn black outline" type="button">All Pools</button>
+                </li>
+                  <li class="justify-content-center justify-content-lg-start d-flex">
+                    <button id="" class="btn go-donation-btn black outline" type="button">Claim Test Token</button>
+                  </li>
+                  <li class="nav-item justify-content-center justify-content-lg-start d-flex">
+                    <button id="createPoolModalBtn" class="btn go-donation-btn outline black" type="button" data-bs-target="#createPool" data-bs-toggle="modal" style="opacity: .2; pointer-events: none; cursor: not-allowed;">Create Pool<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor">
+                <!--Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
                     <path d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path>
-                </svg></button>
-                <button id="walletConnectButton" class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
-                </div>
-        </div>
+                  </svg></button>
+                  </li>
+                  <li class="nav-item justify-content-center justify-content-lg-start d-flex">
+                    <button id="walletConnectButton" class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
     </header>
     <div class="container" style="max-width: 900px;">
         <h5 class="text-nowrap h1 mb-4 text-center"><span class="fw-bold">Search</span><span class="fw-lighter">&nbsp;Result</span></h5>
@@ -60,10 +76,15 @@
                     <div class="raised-goadl-div">
                         <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
                     </div>
-                    <div class="mt-2 d-flex gap-2 w-100"><input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                    <div class="mt-2 d-flex gap-2 w-100">
+                        <div class="position-relative">
+                            <button class="max-amount-btn">Max</button>
+                            <input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                        </div>
                         <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
                 </div>
             </div>
+            
         </div>
     </div>
     <div class="container py-3" style="max-width: 900px;"> <hr> </div>

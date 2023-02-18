@@ -6,7 +6,8 @@ let provider,
   ourContract,
   accounts,
   contract,
-  lastAllowedAmount;
+  lastAllowedAmount,
+  decimal;
 
 function changeConnectBtnWalletId() {
   let firstFive = walletAddress.substring(0, 4);
@@ -51,6 +52,7 @@ async function connect(callback) {
     provider = new ethers.providers.JsonRpcProvider(rpcUrl, { chainId });
     ourContract = new ethers.Contract(ourContractAddress, abi, provider);
     usdcContract = new ethers.Contract(usdcAddress, usdcABI, provider);
+    decimal = Math.pow(10, await getDecimals());
     callback();
   } else {
     provider = new ethers.providers.Web3Provider(window.ethereum, "any");
@@ -118,6 +120,7 @@ async function connect(callback) {
       walletAddress = await signer.getAddress();
       ourContract = new ethers.Contract(ourContractAddress, abi, signer);
       usdcContract = new ethers.Contract(usdcAddress, usdcABI, signer);
+      decimal = Math.pow(10, await getDecimals());
       isopen = true;
       callback();
     }
@@ -177,8 +180,9 @@ async function handleDonateWithMatch(poolId, amount) {
     },
     allowOutsideClick: false,
   });
+  let amountinput = amount;
   try {
-    const tx = await donateWithMatch(poolId, amount);
+    const tx = await donateWithMatch(poolId, amountinput);
     await provider.waitForTransaction(tx.hash);
     Swal.fire({
       showCloseButton: true,
@@ -256,8 +260,8 @@ async function searchOnNewPage() {
     let cssRatio = Math.floor(ratio * 100) + "%";
 
     ratioSpan.textContent = ratioPercent;
-    usdcAmountSpan.textContent = currentMatch + " USDC";
-    matchAmountSpan.textContent = maximumMatch + " USDC";
+    usdcAmountSpan.textContent = currentMatch/decimal + " USDC";
+    matchAmountSpan.textContent = maximumMatch/decimal + " USDC";
     loaderFront.style.width = `${cssRatio}`;
     poolNameHeader.textContent = poolName;
     remainDaySpan.textContent = remainTime;
@@ -290,7 +294,7 @@ async function handleCreatePool(
     },
     allowOutsideClick: false,
   });
-
+  console.log(matchAmount);
   try {
     let pooltx = await createPool(
       matchAmount,
@@ -378,14 +382,16 @@ function increaseDeadlineByUser() {
 async function increaseMaxMatchByUser() {
   const urlParams = new URLSearchParams(window.location.search);
   const poolId = urlParams.get("poolId");
-  let newMatchAmountInput = Number(document.getElementById("newmatchamount").value);
+
+  let newMatchAmountInput = Number(document.getElementById("newmatchamount").value)* decimal;
+  
 
   let allowanceAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
   let lastAllowedAmount = allowanceAmount;
   if (lastAllowedAmount < newMatchAmountInput) {
-    approve(ourContractAddress, newMatchAmountInput);
+    await approve(ourContractAddress, newMatchAmountInput);
   } else {
-    increaseMaxMatch(poolId, newMatchAmountInput);
+    await increaseMaxMatch(poolId, newMatchAmountInput);
     console.log(` ${newMatchAmountInput} amount increased for matching`);
   }
 }
@@ -394,7 +400,8 @@ async function createNewPoolByUser() {
   if (!isopen) {
     newConnection();
   } else {
-    let poolMatchAmount = Number(document.getElementById("matchAmountInput").value);
+    let matchAmount = Number(document.getElementById("matchAmountInput").value);
+    let poolMatchAmount = matchAmount * decimal;
     let deadlineInput = document.getElementById("deadlineInput");
     let poolDeadLine = new Date(deadlineInput.value).getTime();
     let poolName = document.getElementById("poolNameInput").value;
@@ -468,8 +475,8 @@ async function displayPoolInfoHelper(poolCard) {
     const poolName = poolCard.id;
     const poolId = await encode(poolName);
     const pool = await getPool(poolId)
-    const currentMatch = pool.currentMatched.toString();
-    const maximumMatch = pool.maximumMatch.toString();
+    const currentMatch = (pool.currentMatched/decimal).toString();
+    const maximumMatch = (pool.maximumMatch/decimal).toString();
     const poolDeadline = pool.deadline.toString();
     const donationAddress = pool.donationAddress;
     const donationAddressName = await getDonationAddressName(donationAddress);
@@ -513,7 +520,7 @@ const handleDonateClick = async (event) => {
   let poolCard = event.target.closest(".pool-card");
   let poolName = poolCard.id;
   let poolId = await encode(poolName);
-  donateAmount = Number(poolCard.querySelector(".donateAmountInput").value);
+  donateAmount = Number(poolCard.querySelector(".donateAmountInput").value)*decimal;
   if (donateAmount) {
     lastAllowedAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
     const donateButton = poolCard.querySelector(".lets-donate");

@@ -80,3 +80,8 @@ async function approve(spender, value) {
     let myApprove = await usdcContract.approve(spender, value);
     return myApprove;
 }
+
+async function getDecimals() {
+    let decimals = await usdcContract.decimals();
+    return decimals;
+}

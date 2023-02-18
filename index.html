@@ -20,18 +20,35 @@
 
 <body onload="newConnection()">
     <header class="mb-5 py-3">
-        <div class="container d-flex flex-md-row flex-column justify-content-between gap-3">
-            <a class="text-decoration-none text-dark" href="index.html">
-                <h1 class="fw-light h4"><span class="fw-bold">Earthquake</span> Donation</h1>
-            </a>
-            <div class="d-flex gap-3 flex-md-row flex-column">
-                <button id="createPoolModalBtn" class="btn go-donation-btn outline black" type="button" data-bs-target="#createPool" data-bs-toggle="modal" style="opacity: .2; pointer-events: none; cursor: not-allowed;">Create Pool<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor">
-                    <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
+          <nav class="navbar navbar-expand-lg container navbar-light">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="index.html"><h1 class="fw-light h4"><span class="fw-bold">Earthquake</span> Donation</h1></a>
+              <button class="navbar-toggler" style="z-index: 9;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto gap-3">
+
+                  <li class="justify-content-center justify-content-lg-start d-flex">
+                    <button id="" class="btn go-donation-btn black outline" type="button">All Pools</button>
+                </li>
+                  <li class="justify-content-center justify-content-lg-start d-flex">
+                    <button id="" class="btn go-donation-btn black outline" type="button">Claim Test Token</button>
+                  </li>
+                  <li class="nav-item justify-content-center justify-content-lg-start d-flex">
+                    <button id="createPoolModalBtn" class="btn go-donation-btn outline black" type="button" data-bs-target="#createPool" data-bs-toggle="modal" style="opacity: .2; pointer-events: none; cursor: not-allowed;">Create Pool<svg xmlns="http://www.w3.org/2000/svg" viewBox="-32 0 512 512" width="1em" height="1em" fill="currentColor">
+                <!--Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
                     <path d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"></path>
-                </svg></button>
-                <button id="walletConnectButton" class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
-                </div>
-        </div>
+                  </svg></button>
+                  </li>
+                  <li class="nav-item justify-content-center justify-content-lg-start d-flex">
+                    <button id="walletConnectButton" class="btn go-donation-btn black outline" type="button" onclick="newConnection()">Connect Wallet<i class="metamask-icon"></i></button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </nav>
+        
     </header>
     <div class="container mb-5 search-div-cont">
         <h5 class="text-nowrap h1 mb-4 text-center"><span class="fw-bold">Search Pool</span><span class="fw-lighter">&nbsp;With Name</span></h5>
@@ -74,7 +91,11 @@
                         <div class="raised-goadl-div">
                             <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
                         </div>
-                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer">
+                            <div class="position-relative">
+                                <button class="max-amount-btn">Max</button>
+                                <input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            </div>
                             <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
                     </div>
                 </div>
@@ -104,7 +125,11 @@
                         <div class="raised-goadl-div">
                             <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
                         </div>
-                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer">
+                            <div class="position-relative">
+                                <button class="max-amount-btn">Max</button>
+                                <input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            </div>
                             <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
                     </div>
                 </div>
@@ -114,16 +139,13 @@
                     <div class="loader-info">
                         <div class="pool-card-header-div-mother">
                             <div class="pool-card-header-div">
-                                <h4 class="poolname">Pool Name</h4> 
+                                <h4 class="poolname">Pool Name</h4>
                                 <div class="remain-day-div"><span class="remain-day-span">x</span><span>days left</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
                                         <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
                                         <path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path>
-                                    </svg>
-                                </div>  
+                                    </svg></div>
                             </div>
                             <small class="text-muted" style="font-size: .7rem; margin-top: -.15rem; display: block;">is matching your donations</small>
-                            
-                            
                             <p><span class="fw-bold donation-adress-name-span">Donation Adress Name</span>&nbsp;is being funded</p>
                         </div>
                         <div class="raised-goadl-div">
@@ -137,7 +159,11 @@
                         <div class="raised-goadl-div">
                             <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
                         </div>
-                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer">
+                            <div class="position-relative">
+                                <button class="max-amount-btn">Max</button>
+                                <input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            </div>
                             <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
                     </div>
                 </div>
@@ -147,16 +173,13 @@
                     <div class="loader-info">
                         <div class="pool-card-header-div-mother">
                             <div class="pool-card-header-div">
-                                <h4 class="poolname">Pool Name</h4> 
+                                <h4 class="poolname">Pool Name</h4>
                                 <div class="remain-day-div"><span class="remain-day-span">x</span><span>days left</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em" fill="currentColor">
                                         <!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. -->
                                         <path d="M232 120C232 106.7 242.7 96 256 96C269.3 96 280 106.7 280 120V243.2L365.3 300C376.3 307.4 379.3 322.3 371.1 333.3C364.6 344.3 349.7 347.3 338.7 339.1L242.7 275.1C236 271.5 232 264 232 255.1L232 120zM256 0C397.4 0 512 114.6 512 256C512 397.4 397.4 512 256 512C114.6 512 0 397.4 0 256C0 114.6 114.6 0 256 0zM48 256C48 370.9 141.1 464 256 464C370.9 464 464 370.9 464 256C464 141.1 370.9 48 256 48C141.1 48 48 141.1 48 256z"></path>
-                                    </svg>
-                                </div>  
+                                    </svg></div>
                             </div>
                             <small class="text-muted" style="font-size: .7rem; margin-top: -.15rem; display: block;">is matching your donations</small>
-                            
-                            
                             <p><span class="fw-bold donation-adress-name-span">Donation Adress Name</span>&nbsp;is being funded</p>
                         </div>
                         <div class="raised-goadl-div">
@@ -170,11 +193,16 @@
                         <div class="raised-goadl-div">
                             <div class="raised-with-logo-div"><span class="loader-percentage usdcAmount">x usdc</span></div><span class="loader-percentage pooltotalamount">x usdc</span>
                         </div>
-                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer"><input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                        <div class="mt-2 d-flex gap-2 w-100 pool-card-footer">
+                            <div class="position-relative">
+                                <button class="max-amount-btn">Max</button>
+                                <input type="text" class="form-control neu-shadow donateAmountInput" placeholder="Amount">
+                            </div>
                             <button class="btn go-donation-btn outline lets-donate" type="button" onclick="handleDonateClick(event)" ><span class="raised-avax-logo"><i class="usdc-icon"></i></span>Donate<svg xmlns="http://www.w3.org/2000/svg" viewbox="-128 0 512 512" width="1em" height="1em" fill="currentColor"><path d="M64 448c-8.188 0-16.38-3.125-22.62-9.375c-12.5-12.5-12.5-32.75 0-45.25L178.8 256L41.38 118.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0l160 160c12.5 12.5 12.5 32.75 0 45.25l-160 160C80.38 444.9 72.19 448 64 448z"></path></svg></button></div>
                     </div>
                 </div>
             </div>
+            
 
 
         </div>
@@ -225,7 +253,7 @@
     </template> -->
 
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
+    <!-- <script src="assets/js/bootstrap.min.js"></script> -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.1/dist/sweetalert2.all.min.js"></script>
 
 </body>

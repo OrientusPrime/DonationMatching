@@ -421,3 +421,15 @@ thead tr.neu-shadow {
   max-width: 1000px;
 }
 }
+
+.max-amount-btn{
+  background:none;
+  border:none;
+  color: var(--bs-blue);
+  font-weight: 500;
+  position:absolute !important;
+  top:50%;
+  right:.5rem;
+  transform:translateY(calc(-50% - 1px));
+  font-size: .8rem;
+}

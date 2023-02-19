@@ -72,6 +72,20 @@ tr.neu-shadow td, tr.neu-shadow th {
   justify-content: end;
   padding-right: .5rem;
   box-shadow: 0px 0px 12px var(--bs-blue);
+  position:absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+.loader-secondary{
+content: "";
+position: absolute;
+top: 0;
+left: 0;
+width: 0%;
+background-color: #c8d7ff;
+height: 100%;
+z-index: 0;
 }
 
 .loader-info {

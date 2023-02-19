@@ -23,10 +23,12 @@ function changeConnectBtnWalletId() {
 
 function newConnection() {
   connect(async function () {
-    if (typeof window.ethereum !== 'undefined') {
-      lastAllowedAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+    if (typeof window.ethereum !== "undefined") {
+      lastAllowedAmount = (
+        await getAllowance(walletAddress, ourContractAddress)
+      ).toNumber();
     }
-    
+
     updateCreatePoolBtnVisibility();
     loadDonationAddresses();
     if (walletAddress) {
@@ -44,9 +46,9 @@ function newConnection() {
 }
 
 async function connect(callback) {
-  if (typeof window.ethereum === 'undefined') {
-    console.log('MetaMask is not installed!');
-    const rpcUrl = 'https://api.avax-test.network/ext/bc/C/rpc';
+  if (typeof window.ethereum === "undefined") {
+    console.log("MetaMask is not installed!");
+    const rpcUrl = "https://api.avax-test.network/ext/bc/C/rpc";
     const chainId = 43113;
 
     provider = new ethers.providers.JsonRpcProvider(rpcUrl, { chainId });
@@ -61,14 +63,14 @@ async function connect(callback) {
       // event with a null oldNetwork along with the newNetwork. So, if the
       // oldNetwork exists, it represents a changing network
       if (oldNetwork) {
-          window.location.reload();
+        window.location.reload();
       }
     });
 
     accounts = await provider.send("eth_requestAccounts", []);
     const network = await provider.getNetwork();
     const currentNetworkId = await network.chainId;
-    
+
     if (!(currentNetworkId === AVALANCHE_FUJI_NETWORK_ID)) {
       console.log("trying switch network");
       Swal.fire({
@@ -84,26 +86,30 @@ async function connect(callback) {
       });
       try {
         await ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0xA869' }],
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: "0xA869" }],
         });
       } catch (switchError) {
         // This error code indicates that the chain has not been added to MetaMask.
         if (switchError.code === 4902) {
           try {
             await ethereum.request({
-              method: 'wallet_addEthereumChain',
+              method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainId: '0xA869',
-                  chainName: 'Avalanche Fuji C-Chain',
+                  chainId: "0xA869",
+                  chainName: "Avalanche Fuji C-Chain",
                   nativeCurrency: {
-                    name: 'AVAX',
-                    symbol: 'AVAX', // 2-6 characters long
+                    name: "AVAX",
+                    symbol: "AVAX", // 2-6 characters long
                     decimals: 18,
                   },
-                  rpcUrls: ['https://api.avax-test.network/ext/bc/C/rpc'] /* ... */,
-                  blockExplorerUrls: ['https://testnet.snowtrace.io/'] /* ... */,
+                  rpcUrls: [
+                    "https://api.avax-test.network/ext/bc/C/rpc",
+                  ] /* ... */,
+                  blockExplorerUrls: [
+                    "https://testnet.snowtrace.io/",
+                  ] /* ... */,
                 },
               ],
             });
@@ -115,7 +121,7 @@ async function connect(callback) {
       }
       Swal.close();
       //newConnection();
-    }else {
+    } else {
       signer = provider.getSigner();
       walletAddress = await signer.getAddress();
       ourContract = new ethers.Contract(ourContractAddress, abi, signer);
@@ -149,7 +155,6 @@ function calculateDateDifference(deadlineDate) {
   return diffDays;
 }
 
-
 async function loadDonationAddresses() {
   const count = await getDonationAddressCount();
   let options = "";
@@ -160,7 +165,6 @@ async function loadDonationAddresses() {
   }
   document.getElementById("donationAddressSelect").innerHTML = options;
 }
-
 
 async function handleDonateWithMatch(poolId, amount) {
   let donatedPoolName = await getPoolName(poolId);
@@ -260,8 +264,8 @@ async function searchOnNewPage() {
     let cssRatio = Math.floor(ratio * 100) + "%";
 
     ratioSpan.textContent = ratioPercent;
-    usdcAmountSpan.textContent = currentMatch/decimal + " USDC";
-    matchAmountSpan.textContent = maximumMatch/decimal + " USDC";
+    usdcAmountSpan.textContent = currentMatch / decimal + " USDC";
+    matchAmountSpan.textContent = maximumMatch / decimal + " USDC";
     loaderFront.style.width = `${cssRatio}`;
     poolNameHeader.textContent = poolName;
     remainDaySpan.textContent = remainTime;
@@ -282,7 +286,7 @@ async function handleCreatePool(
   deadline,
   foundationDonationAdressId,
   name
-){
+) {
   Swal.fire({
     showCloseButton: false,
     showConfirmButton: false,
@@ -321,7 +325,12 @@ async function handleCreatePool(
       confirmButtonText: "Try Again",
     }).then((result) => {
       if (result.isConfirmed) {
-        handleCreatePool(matchAmount, deadline, foundationDonationAdressId, name);
+        handleCreatePool(
+          matchAmount,
+          deadline,
+          foundationDonationAdressId,
+          name
+        );
       }
     });
   }
@@ -332,8 +341,12 @@ async function checkDonateAmount(event) {
     newConnection();
   } else {
     let poolCard = event.target.closest(".pool-card");
-    let donateAmount = Number(poolCard.querySelector(".donateAmountInput").value);
-    let allowanceAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+    let donateAmount = Number(
+      poolCard.querySelector(".donateAmountInput").value
+    );
+    let allowanceAmount = (
+      await getAllowance(walletAddress, ourContractAddress)
+    ).toNumber();
 
     if (allowanceAmount > lastAllowedAmount) {
       lastAllowedAmount = allowanceAmount;
@@ -378,15 +391,16 @@ function increaseDeadlineByUser() {
   console.log(` ${newDeadlineDate} deadline increased`);
 }
 
-
 async function increaseMaxMatchByUser() {
   const urlParams = new URLSearchParams(window.location.search);
   const poolId = urlParams.get("poolId");
 
-  let newMatchAmountInput = Number(document.getElementById("newmatchamount").value)* decimal;
-  
+  let newMatchAmountInput =
+    Number(document.getElementById("newmatchamount").value) * decimal;
 
-  let allowanceAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+  let allowanceAmount = (
+    await getAllowance(walletAddress, ourContractAddress)
+  ).toNumber();
   let lastAllowedAmount = allowanceAmount;
   if (lastAllowedAmount < newMatchAmountInput) {
     await approve(ourContractAddress, newMatchAmountInput);
@@ -412,11 +426,16 @@ async function createNewPoolByUser() {
     let foundationDonationAdressId = selectedDonationAdress;
     //ToDo: Foundation Donation Adress Id input olucak
 
-    let allowanceAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+    let allowanceAmount = (
+      await getAllowance(walletAddress, ourContractAddress)
+    ).toNumber();
     let lastAllowedAmount = allowanceAmount;
     //1000000 ile çarpmayı unutma
     if (lastAllowedAmount < poolMatchAmount) {
-      console.log("createNewPoolByUser lastAllowedAmount < poolMatchAmount, walletAddress: " + walletAddress);
+      console.log(
+        "createNewPoolByUser lastAllowedAmount < poolMatchAmount, walletAddress: " +
+          walletAddress
+      );
       Swal.fire({
         showCloseButton: false,
         showConfirmButton: false,
@@ -463,50 +482,102 @@ async function createNewPoolByUser() {
 }
 
 async function displayPoolInfoHelper(poolCard) {
-    const poolNameHeader = poolCard.querySelector(".poolname");
-    const usdcAmountSpan = poolCard.querySelector(".usdcAmount");
-    const matchAmountSpan = poolCard.querySelector(".pooltotalamount");
-    const ratioSpan = poolCard.querySelector(".ratio");
-    const loaderFront = poolCard.querySelector(".loader-front");
-    const remainDaySpan = poolCard.querySelector(".remain-day-span");
-    const donationAdressNameSpan = poolCard.querySelector(
-      ".donation-adress-name-span"
-    );
-    const poolName = poolCard.id;
-    const poolId = await encode(poolName);
-    const pool = await getPool(poolId)
-    const currentMatch = (pool.currentMatched/decimal).toString();
-    const maximumMatch = (pool.maximumMatch/decimal).toString();
-    const poolDeadline = pool.deadline.toString();
-    const donationAddress = pool.donationAddress;
-    const donationAddressName = await getDonationAddressName(donationAddress);
-    const remainTime = calculateDateDifference(poolDeadline);
-    const ratio = parseInt(currentMatch) / parseInt(maximumMatch);
-    const ratioPercent = (ratio * 100).toFixed(2) + "%";
-    const cssRatio = Math.floor(ratio * 100) + "%";
+  const poolNameHeader = poolCard.querySelector(".poolname");
+  const usdcAmountSpan = poolCard.querySelector(".usdcAmount");
+  const matchAmountSpan = poolCard.querySelector(".pooltotalamount");
+  const ratioSpan = poolCard.querySelector(".ratio");
+  const loaderFront = poolCard.querySelector(".loader-front");
+  const remainDaySpan = poolCard.querySelector(".remain-day-span");
+  const donationAdressNameSpan = poolCard.querySelector(
+    ".donation-adress-name-span"
+  );
+  const poolName = poolCard.id;
+  const poolId = await encode(poolName);
+  const pool = await getPool(poolId);
+  const currentMatch = (pool.currentMatched / decimal).toString();
+  const maximumMatch = (pool.maximumMatch / decimal).toString();
+  const poolDeadline = pool.deadline.toString();
+  const donationAddress = pool.donationAddress;
+  const donationAddressName = await getDonationAddressName(donationAddress);
+  const remainTime = calculateDateDifference(poolDeadline);
+  const ratio = parseInt(currentMatch) / parseInt(maximumMatch);
+  const ratioPercent = (ratio * 100).toFixed(2) + "%";
+  const cssRatio = Math.floor(ratio * 100) + "%";
 
-    ratioSpan.textContent = ratioPercent;
-    usdcAmountSpan.textContent = currentMatch + " USDC";
-    matchAmountSpan.textContent = maximumMatch + " USDC";
-    loaderFront.style.width = `${cssRatio}`;
-    remainDaySpan.textContent = remainTime;
-    donationAdressNameSpan.textContent = donationAddressName;
-    poolNameHeader.textContent = poolName;
+  ratioSpan.textContent = ratioPercent;
+  usdcAmountSpan.textContent = currentMatch + " USDC";
+  matchAmountSpan.textContent = maximumMatch + " USDC";
+  loaderFront.style.width = `${cssRatio}`;
+  remainDaySpan.textContent = remainTime;
+  donationAdressNameSpan.textContent = donationAddressName;
+  poolNameHeader.textContent = poolName;
 }
 
 async function displayPoolInfo() {
   const poolCards = document.querySelectorAll(".pool-card");
   let promises = [];
   for (const poolCard of poolCards) {
-      promises.push(displayPoolInfoHelper(poolCard));
+    promises.push(displayPoolInfoHelper(poolCard));
   }
   await Promise.all(promises);
 }
 
+function updateLoaderWidth(event) {
+  console.log("updateLoaderWidth");
+  let poolCard = event.target.closest(".pool-card");
+  const donateAmountInput = poolCard.querySelector(".donateAmountInput");
+  const loaderSecondary = poolCard.querySelector(".loader-secondary");
+  const inputValue = donateAmountInput.value * 1000000;
+  const poolName = poolCard.getAttribute("id");
+
+  encode(poolName).then(function (poolId) {
+    getPool(poolId).then(async function (pool) {
+      const maximumMatch = pool.maximumMatch;
+      const currentMatch = pool.currentMatched;
+
+      const currentRatio = (currentMatch / maximumMatch) * 100;
+
+      const ratio = (inputValue / maximumMatch) * 100;
+
+      if (currentRatio + ratio <= 100) {
+        const cssRatio = Math.floor(currentRatio + ratio) + "%";
+
+        loaderSecondary.style.width = `${cssRatio}`;
+      } else {
+        loaderSecondary.style.width = "100%";
+        donateAmountInput.value = (maximumMatch - currentMatch) / 1000000;
+      }
+    });
+  });
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const poolCards = document.querySelectorAll(".pool-card");
+  const maxAmountBtn = document.querySelector(".max-amount-btn");
+
   poolCards.forEach(function (poolCard) {
     const pool = poolCard.querySelector(".poolname");
+    const maxAmountBtnPool = poolCard.querySelector(".max-amount-btn");
+    const donateAmountInput = poolCard.querySelector(".donateAmountInput");
+
+    maxAmountBtnPool.addEventListener("click", function () {
+      const poolName = poolCard.getAttribute("id");
+      encode(poolName).then(function (poolId) {
+        getPool(poolId).then(async function (pool) {
+          const userBalance = await usdcContract.balanceOf(walletAddress);
+          const maximumMatch = pool.maximumMatch;
+          const currentMatch = pool.currentMatched;
+          const abilityMaxDonate = maximumMatch - currentMatch;
+          const poolCard = document.getElementById(poolName);
+          if (userBalance < abilityMaxDonate) {
+            donateAmountInput.value = Math.floor(userBalance / decimal);
+          } else {
+            donateAmountInput.value = Math.floor(abilityMaxDonate / decimal);
+          }
+        });
+      });
+    });
+
     pool.addEventListener("click", function () {
       const poolName = poolCard.getAttribute("id");
       encode(poolName).then(function (poolId) {
@@ -520,9 +591,12 @@ const handleDonateClick = async (event) => {
   let poolCard = event.target.closest(".pool-card");
   let poolName = poolCard.id;
   let poolId = await encode(poolName);
-  donateAmount = Number(poolCard.querySelector(".donateAmountInput").value)*decimal;
+  donateAmount =
+    Number(poolCard.querySelector(".donateAmountInput").value) * decimal;
   if (donateAmount) {
-    lastAllowedAmount = (await getAllowance(walletAddress, ourContractAddress)).toNumber();
+    lastAllowedAmount = (
+      await getAllowance(walletAddress, ourContractAddress)
+    ).toNumber();
     const donateButton = poolCard.querySelector(".lets-donate");
     if (lastAllowedAmount < donateAmount) {
       Swal.fire({

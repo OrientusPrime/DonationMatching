@@ -148,9 +148,9 @@ function updateCreatePoolBtnVisibility() {
 
 function calculateDateDifference(deadlineDate) {
   let deadline = Number(deadlineDate);
-  let today = new Date();
-  let diffTime = deadline - today.getTime();
-  let diffDays = Math.ceil(diffTime / (1000 * 3600 * 24));
+  let today = Math.floor(new Date().getTime() / 1000);
+  let diffTime = deadline - today;
+  let diffDays = Math.ceil(diffTime / ( 60* 60 * 24));
 
   return diffDays;
 }
@@ -168,13 +168,14 @@ async function loadDonationAddresses() {
 
 async function handleDonateWithMatch(poolId, amount) {
   let donatedPoolName = await getPoolName(poolId);
+  let amountinput = amount / decimal;
   Swal.fire({
     showCloseButton: false,
     showConfirmButton: false,
     title: "Please confirm your generous contribution",
     text:
       "Your donation of " +
-      amount +
+      amountinput +
       " USDC will be matched by " +
       donatedPoolName +
       " pool.",
@@ -184,9 +185,8 @@ async function handleDonateWithMatch(poolId, amount) {
     },
     allowOutsideClick: false,
   });
-  let amountinput = amount;
   try {
-    const tx = await donateWithMatch(poolId, amountinput);
+    const tx = await donateWithMatch(poolId, amount);
     await provider.waitForTransaction(tx.hash);
     Swal.fire({
       showCloseButton: true,
@@ -379,13 +379,16 @@ function closePoolWithWithdrawByUser() {
   console.log(`pool closed with donation`);
 }
 
-function increaseDeadlineByUser() {
+async function increaseDeadlineByUser() {
   const urlParams = new URLSearchParams(window.location.search);
   const poolId = urlParams.get("poolId");
   const deadlineInput = document.getElementById("newdeadline");
-  let newDeadlineDate = new Date(deadlineInput.value);
-  let today = new Date();
-  let diffDays = newDeadlineDate.getTime() - today.getTime();
+  let newDeadlineDate = Math.floor(new Date(deadlineInput.value).getTime() / 1000);
+  let today = Math.floor(new Date().getTime() / 1000);
+  const pool =  await getPool(poolId);
+  const poolDeadline = pool.deadline;
+
+  const diffDays = newDeadlineDate - poolDeadline;
 
   increaseDeadline(poolId, diffDays);
   console.log(` ${newDeadlineDate} deadline increased`);
@@ -417,66 +420,83 @@ async function createNewPoolByUser() {
     let matchAmount = Number(document.getElementById("matchAmountInput").value);
     let poolMatchAmount = matchAmount * decimal;
     let deadlineInput = document.getElementById("deadlineInput");
-    let poolDeadLine = new Date(deadlineInput.value).getTime();
+    let poolDeadLine = Math.floor(new Date(deadlineInput.value).getTime() / 1000);
     let poolName = document.getElementById("poolNameInput").value;
     let selectedDonationAdress = document.getElementById(
       "donationAddressSelect"
     ).value;
+    var amountError = document.getElementById("amount-error");
+    var deadlineError = document.getElementById("deadline-error");
+    var amount = document.getElementById("matchAmountInput");
+    let timenow = Math.floor(new Date().getTime() / 1000);
+    if (Number(matchAmount) < 1000) {
+      amount.style.border = "1px solid red";
+      amountError.style.display = "block";
+    } else if(poolDeadLine < timenow + (24 * 60 * 60 * 7)){
+      amount.style.border = "0";
+      amountError.style.display = "none";
+      deadlineError.style.display = "block";
+    }
+      else {
+      amount.style.border = "0";
+      amountError.style.display = "none";
+      deadlineError.style.display = "none";
 
-    let foundationDonationAdressId = selectedDonationAdress;
-    //ToDo: Foundation Donation Adress Id input olucak
+      let foundationDonationAdressId = selectedDonationAdress;
+      //ToDo: Foundation Donation Adress Id input olucak
 
-    let allowanceAmount = (
-      await getAllowance(walletAddress, ourContractAddress)
-    ).toNumber();
-    let lastAllowedAmount = allowanceAmount;
-    //1000000 ile çarpmayı unutma
-    if (lastAllowedAmount < poolMatchAmount) {
-      console.log(
-        "createNewPoolByUser lastAllowedAmount < poolMatchAmount, walletAddress: " +
-          walletAddress
-      );
-      Swal.fire({
-        showCloseButton: false,
-        showConfirmButton: false,
-        title: "Please confirm and wait for approval request!",
-        text: "Your Allowance Amount will increase for creating new pool with your match amount",
-        icon: "info",
-        didOpen: () => {
-          Swal.showLoading();
-        },
-        allowOutsideClick: false,
-      });
-      try {
-        txPool = await approve(ourContractAddress, poolMatchAmount);
-        await provider.waitForTransaction(txPool.hash);
+      let allowanceAmount = (
+        await getAllowance(walletAddress, ourContractAddress)
+      ).toNumber();
+      let lastAllowedAmount = allowanceAmount;
+      //1000000 ile çarpmayı unutma
+      if (lastAllowedAmount < poolMatchAmount) {
+        console.log(
+          "createNewPoolByUser lastAllowedAmount < poolMatchAmount, walletAddress: " +
+            walletAddress
+        );
+        Swal.fire({
+          showCloseButton: false,
+          showConfirmButton: false,
+          title: "Please confirm and wait for approval request!",
+          text: "Your Allowance Amount will increase for creating new pool with your match amount",
+          icon: "info",
+          didOpen: () => {
+            Swal.showLoading();
+          },
+          allowOutsideClick: false,
+        });
+        try {
+          txPool = await approve(ourContractAddress, poolMatchAmount);
+          await provider.waitForTransaction(txPool.hash);
+          handleCreatePool(
+            poolMatchAmount,
+            poolDeadLine,
+            foundationDonationAdressId,
+            poolName
+          );
+        } catch (err) {
+          await Swal.fire({
+            showCloseButton: true,
+            showConfirmButton: true,
+            title: "Error!",
+            text: "Approve transaction failed",
+            icon: "error",
+            confirmButtonText: "Try Again",
+          }).then(async (result) => {
+            if (result.isConfirmed) {
+              createNewPoolByUser();
+            }
+          });
+        }
+      } else {
         handleCreatePool(
           poolMatchAmount,
           poolDeadLine,
           foundationDonationAdressId,
           poolName
         );
-      } catch (err) {
-        await Swal.fire({
-          showCloseButton: true,
-          showConfirmButton: true,
-          title: "Error!",
-          text: "Approve transaction failed",
-          icon: "error",
-          confirmButtonText: "Try Again",
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            createNewPoolByUser();
-          }
-        });
       }
-    } else {
-      handleCreatePool(
-        poolMatchAmount,
-        poolDeadLine,
-        foundationDonationAdressId,
-        poolName
-      );
     }
   }
 }
@@ -553,7 +573,6 @@ function updateLoaderWidth(event) {
 
 document.addEventListener("DOMContentLoaded", function () {
   const poolCards = document.querySelectorAll(".pool-card");
-  const maxAmountBtn = document.querySelector(".max-amount-btn");
 
   poolCards.forEach(function (poolCard) {
     const pool = poolCard.querySelector(".poolname");
@@ -568,12 +587,12 @@ document.addEventListener("DOMContentLoaded", function () {
           const maximumMatch = pool.maximumMatch;
           const currentMatch = pool.currentMatched;
           const abilityMaxDonate = maximumMatch - currentMatch;
-          const poolCard = document.getElementById(poolName);
           if (userBalance < abilityMaxDonate) {
             donateAmountInput.value = Math.floor(userBalance / decimal);
           } else {
             donateAmountInput.value = Math.floor(abilityMaxDonate / decimal);
           }
+          donateAmountInput.dispatchEvent(new Event("input"));
         });
       });
     });

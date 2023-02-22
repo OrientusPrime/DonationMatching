@@ -7,9 +7,8 @@ const AVALANCHE_NETWORK_ID = 43114;
 // Define the Avalanche fuji network ID
 const AVALANCHE_FUJI_NETWORK_ID = 43113;
 
-// const usdcAddress = "0x838FeDe1bA2E080146844209d349a404B5D890d8";
-const usdcAddress = "0x5425890298aed601595a70AB815c96711a31Bc65";
-const ourContractAddress = "0x34DB4808eCd574012bE3948864189145142D205F";
+const usdcAddress = "0x1510775152E53C6580DDbE1E08831153c79a283c";
+const ourContractAddress = "0x8489cCdAE043E365fFbDA77D1b184e0A5f2aAcA0";
 
 const abi = [
   {
